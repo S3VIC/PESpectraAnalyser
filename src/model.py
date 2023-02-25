@@ -1,27 +1,38 @@
 import numpy as np
 import params.parameters as par
-import os
+import src.interface as inter
 
 #Writing cryst calculated cryst parameters to a file (each time this function is evaluated
 # the output is appended to file
 
+def checkForMaximum(spectraDict, foundSignalShift):
+    maxInt = foundSignalShift
+    spectraShifts = list(spectraDict.keys())
+    shiftIndex = spectraShifts.index(foundSignalShift)
+    for i in range(5):
+        if spectraDict[spectraShifts[shiftIndex - i]] > maxInt:
+          maxInt = spectraShifts[shiftIndex - i]
+    
+    for i in range(5):
+        if spectraDict[spectraShifts[shiftIndex + i]] > maxInt:
+          maxInt = spectraShifts[shiftIndex + i]
+    return maxInt
+    
 
 def writeToFile(filename, crystList):
   file = open(filename, "a")
-  for i in crystList:
-    file.write(str(i[0]))
-    file.write('\t')
-    file.write(str(i[1]))
-    file.write('\t')
-    file.write(str(i[2]))
-    file.write('\t')
-    file.write(str(i[3]))
+  for dataSet in crystList:
+    for k in range(4):
+      file.write(str(dataSet[k]))
+      if k != 3:
+        file.write(',')
     file.write('\n')
   file.close()
 
 
-def searchForSignalIntensity(spectraDict, signalShift):
+def searchForSignalIntensity(spectraDict, signalName):
   keys = list(spectraDict.keys())
+  signalShift = par.SIGNAL_SHIFTS[signalName]
   minDistance = abs(signalShift - keys[0])
   realShift = keys[0]
 
@@ -32,18 +43,8 @@ def searchForSignalIntensity(spectraDict, signalShift):
           realShift = keys[i]
   signalInten = spectraDict[realShift]
 
-  return signalInten
-
-
-def getFilenames(path):
-  fileList = []
-  for filename in os.listdir(path):
-    if filename[-3:].upper() == par.FILENAME_EXTENSION:
-      temp_file = os.path.join(path, filename)
-      if os.path.isfile(temp_file):
-        fileList.append(filename)
-  return fileList
-
+#  return signalInten
+  return realShift
 
 def getDataFromFile(filePath):
   dataFile = np.loadtxt(filePath, delimiter=',')
@@ -58,7 +59,7 @@ def getDataFromFile(filePath):
 
 
 def rawModelling(path):
-  filenamesList = getFilenames(path)
+  filenamesList = inter.getFilenameList(path)
   crystList = []
   for filename in filenamesList:
     spectraData = getDataFromFile(path + filename)
@@ -83,37 +84,27 @@ def getIntensityList(spectraData):
   return intensityList
 
 
-def rawModelingWithNormalisation(path):
-  fileList = getFilenames(path)
-  crystList_1 = []
-  crystList_2 = []
+def rawModelingWithNormalisation(path, normalisationCoeff):
+  fileList = inter.getFilenameList(path)
+  crystList = []
 
   for filename in fileList:
-    spectraDataNorm1 = getDataFromFile(path + filename)
-    spectraDataNorm2 = getDataFromFile(path + filename)
+    spectraDataNorm = getDataFromFile(path + filename)
 
-    normalisationIntensities = [
-      searchForSignalIntensity(spectraDataNorm1, par.SIGNAL_SHIFTS['CH2_str_sym']),
-      searchForSignalIntensity(spectraDataNorm1, par.SIGNAL_SHIFTS['CH2_str_asym'])
-    ]
+    normalisationIntensity = searchForSignalIntensity(spectraDataNorm, par.SIGNAL_SHIFTS[normalisationCoeff])
 
-    xCoordinates = list(spectraDataNorm1.keys())
+    xCoordinates = list(spectraDataNorm.keys())
 
     for i in xCoordinates:
-      spectraDataNorm1[i] = spectraDataNorm1[i] / normalisationIntensities[0]
-      spectraDataNorm2[i] = spectraDataNorm2[i] / normalisationIntensities[1]
+      spectraDataNorm[i] = spectraDataNorm[i] / normalisationIntensity
 
-    intensityList_1 = getIntensityList(spectraDataNorm1)
-    intensityList_2 = getIntensityList(spectraDataNorm2)
+    intensityList = getIntensityList(spectraDataNorm)
 
-    crystParams_1 = calculateCrystParams(intensityList_1)
-    crystParams_2 = calculateCrystParams(intensityList_2)
+    crystParams = calculateCrystParams(intensityList)
 
-    crystList_1.append(crystParams_1)
-    crystList_2.append(crystParams_2)
+    crystList.append(crystParams)
 
-  writeToFile("raw_normalised_1.csv", crystList_1)
-  writeToFile("raw_normalised_2.csv", crystList_2)
+  writeToFile("raw_normalised" + normalisationCoeff + ".csv", crystList)
 
 
 def calculateCrystParams(intensityList):
@@ -130,3 +121,5 @@ def calculateCrystParams(intensityList):
   ]
 
   return crystParams
+
+

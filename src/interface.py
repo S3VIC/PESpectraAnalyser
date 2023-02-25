@@ -1,7 +1,10 @@
 import params.parameters as par
 import src.model as mod
 import sys
+import os
 import src.visualiser as vis
+import src.statisticalAnalysis as stat
+import src.bgcorrection as bg
 
 def displayOptions():
     print(par.SIMPLE_PLOTTING_OPTION)
@@ -39,7 +42,11 @@ def actionChoice(path):
             displayModelOptions()
             modelChoice(path)
         case 5:
-            vis.getCrystalData(sys.argv[1])
+            #stat.getCrystalStatistics(path)
+            #bg.correctmcaLS(path)
+            stat.checkRamanShiftDiff(path, 'CH2_str_sym')
+            #stat.checkForPairSpectras(path, sys.argv[2])
+            #stat.checkRamanShiftDiffForSpectraPairs(path, sys.argv[2], stat.checkForPairSpectras(path, sys.argv[2]), 'CH2_str_sym')
         case other:
             assert False, "nope"
 
@@ -50,7 +57,7 @@ def modelChoice(path):
         case 1:
             mod.rawModelling(path)
         case 2:
-            mod.rawModelingWithNormalisation(path)
+            mod.rawModelingWithNormalisation(path, 'CH2_str_sym')
         case 3:
             assert False, par.notImplemented
         case 4:
@@ -59,3 +66,13 @@ def modelChoice(path):
             assert False, par.notImplemented
         case other:
             assert False, "nope"
+
+def getFilenameList(path):
+  fileList = []
+  for filename in os.listdir(path):
+    if filename[-3:].upper() == par.FILENAME_EXTENSION:
+      temp_file = os.path.join(path, filename)
+      if os.path.isfile(temp_file):
+        fileList.append(filename)
+  return fileList
+

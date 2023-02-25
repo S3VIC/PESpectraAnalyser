@@ -13,7 +13,8 @@ def getCrystalData(filePath):
   cryst_4 = np.array(dataFile[:, 3], dtype = 'float')
 
   fig, ax = plt.subplots(1, 1)
-  bin_num = 50
+  bin_num = 100
   n, bins, patches = ax.hist(cryst_1, bin_num, density = False, histtype = 'stepfilled', cumulative = False)
 
-  plt.savefig('test.svg')
+  plt.savefig('cryst_1_raw_n2.svg')
+  plt.close()
