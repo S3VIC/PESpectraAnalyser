@@ -44,9 +44,9 @@ def actionChoice(path):
         case 5:
             #stat.getCrystalStatistics(path)
             #bg.correctmcaLS(path)
-            stat.checkRamanShiftDiff(path)
+            #stat.checkRamanShiftDiff(path)
             #stat.checkForPairSpectras(path, sys.argv[2])
-            #stat.checkRamanShiftDiffForSpectraPairs(path, sys.argv[2], stat.checkForPairSpectras(path, sys.argv[2]), 'CH2_str_sym')
+            stat.checkRamanShiftDiffForSpectraPairs(path, sys.argv[2], stat.checkForPairSpectras(path, sys.argv[2]))
         # test case
         case 6:
             stat.getRamanShiftStats(path)
