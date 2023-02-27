@@ -47,6 +47,9 @@ def actionChoice(path):
             stat.checkRamanShiftDiff(path)
             #stat.checkForPairSpectras(path, sys.argv[2])
             #stat.checkRamanShiftDiffForSpectraPairs(path, sys.argv[2], stat.checkForPairSpectras(path, sys.argv[2]), 'CH2_str_sym')
+        # test case
+        case 6:
+            stat.getRamanShiftStats(path)
         case other:
             assert False, "nope"
 

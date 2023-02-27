@@ -14,7 +14,7 @@ def getCrystalStatistics(path):
             crystData = np.array(fileData[:, column], dtype = 'float')
             count = 0
             for value in crystData:
-                if value <= 1 and value >= 0:
+                if 1 >= value >= 0:
                     count = count + 1
             percentTable.append(count/len(crystData))
         for element in range(4):
@@ -73,3 +73,13 @@ def checkForPairSpectras(path1, path2):
                 pairFiles[fileName] = fileName2
     #print(pairFiles)
     return pairFiles
+
+def getRamanShiftStats(path):
+    fileList = inter.getFilenameList(path)
+
+    for dataFileName in fileList:
+        data = np.loadtxt(path + dataFileName)
+        print(dataFileName + ":")
+        print("min: " + str(min(data)))
+        print("max: " + str(max(data)))
+        print("\n")
