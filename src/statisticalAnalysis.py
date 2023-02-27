@@ -23,26 +23,28 @@ def getCrystalStatistics(path):
         file.close()
 
 
-def checkRamanShiftDiff(path, signalName):
-    fileList = inter.getFilenameList(path)
-    #print(len(fileList))
-    differencesList = []
-    for fileName in fileList:
-        spectraDict = mod.getDataFromFile(path + fileName)
-        predictedShift = mod.searchForSignalIntensity(spectraDict, signalName)
-        verifiedShift = mod.checkForMaximum(spectraDict, predictedShift)
-        #if abs(verifiedShift - predictedShift) > 1e-4:
-            #print("Different")
-        #else:
-            #print("The same")
-        differencesList.append(par.SIGNAL_SHIFTS[signalName] - verifiedShift)
-    standarddev = np.std(differencesList) 
-    average = np.average(differencesList)
-    print(standarddev)
-    print(average)
-    print(min(differencesList))
-    #sortedList = sdifferencesList.sort()
+def checkShifts(predictedShift, verifiedShift):
+    if abs(verifiedShift - predictedShift) > 1e-4:
+        print("Different")
+    else:
+        print("The same")
 
+def checkRamanShiftDiff(path):
+    signals = par.SIGNAL_SHIFTS
+    fileList = inter.getFilenameList(path)
+    for fileName in fileList:
+        for signalName, signalShift in signals.items():
+            differencesList = []
+            #SF - single file
+            file = open(signalName + "_SF_shiftStab.txt", "a")
+            spectraDict = mod.getDataFromFile(path + fileName)
+            predictedShift = mod.searchForSignalIntensity(spectraDict, signalName)
+            verifiedShift = mod.checkForMaximum(spectraDict, predictedShift)
+#        checkShifts(predictedShift, verifiedShift)
+            shiftDiff = signalShift - verifiedShift
+#            differencesList.append(signalShift - verifiedShift)
+            file.write(str(shiftDiff) + '\n')
+        file.close()
 def checkRamanShiftDiffForSpectraPairs(path1, path2, pairsDict, signalName):
     differencesList = []
     for key, value in pairsDict.items():

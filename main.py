@@ -15,9 +15,9 @@ def justPlot(fileName):
     plt.plot(x,y)
     plt.savefig("test2.svg")
 
+
 if __name__ == '__main__':
-    #inter.mainMenu()
-    print("Hello")
+    inter.mainMenu()
 #    inter.actionChoice(sys.argv[1])
 #  print("Hello world!")/A
 #    justPlot(sys.argv[1])
