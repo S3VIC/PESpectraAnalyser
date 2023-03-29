@@ -6,13 +6,82 @@ import src.visualiser as vis
 import src.statisticalAnalysis as stat
 import src.bgcorrection as bg
 
+
+def mainMenu():
+    print(par.WELCOME_MESSAGE)
+    print(par.CHOOSE_MESSAGE)
+    displayOptions()
+
+
 def displayOptions():
-    print(par.SIMPLE_PLOTTING_OPTION)
-    print(par.GAL_PEAKS_PLOTTING)
-    print(par.FULL_PLOTTING_OPTION)
-    print(par.MODELLING_ACTIONS)
-    print("5) statistical analysis")
+    print("1) Plotting")
+    print("2) Statistical analysis")
+    print("3) Modelling")
+    print("4) Exit")
     actionChoice(sys.argv[1])
+
+
+def plottingOptions():
+    print("1) Raw plotting")
+    print("2) Plotting with Gal peaks")
+    print("3) Raw and Gal plotting")
+    print("4) Maine menu")
+    plottingActions()
+
+
+def plottingActions():
+    action = int(input("Select option: "))
+    match action:
+        case 1:
+            plottingOptions()
+        case 2:
+            assert False, par.notImplemented
+        case 3:
+            assert False, par.notImplemented
+        case 4:
+            mainMenu()
+            
+
+def statisticalAnalysisOptions():
+    print("1) Raman shift stability (raw)")
+    print("2) Raman shift stabilility for paired spectras (OMNIC bg correction)")
+    print("2) Raman shift stability (after bg correction)")
+    print("4) Main menu")
+    statisticalAnalysisActions()
+
+
+def statisticalAnalysisActions():
+    action = int(input("Select option: "))
+
+    match action:
+        case 1:
+            assert False, par.notImplemented
+        case 2:
+            assert False, par.notImplemented
+        case 3:
+            assert False, par.notImplemented
+        case 4:
+            mainMenu()
+
+
+def modellingOptions():
+    print("1) Raw modelling (based on raw intensities)")
+    print("2) Modelling bg corrected spectras")
+    print("3) Main menu")
+    modellingActions()
+
+
+def modellingActions():
+    action = int(input("Select option: "))
+    match action:
+        case 1:
+            assert False, par.notImplemented
+        case 2:
+            assert False, par.notImplemented
+        case 3:
+            mainMenu()
+        case other:
+            assert False, "Wrong option"
 
 
 def displayModelOptions():
@@ -23,52 +92,21 @@ def displayModelOptions():
     print(par.MAIN_MENU)
 
 
-def mainMenu():
-    print(par.WELCOME_MESSAGE)
-    print(par.CHOOSE_MESSAGE)
-    displayOptions()
-
-
 def actionChoice(path):
     number = int(input("Select option: "))
     match number:
         case 1:
-            assert False, par.notImplemented
+            plottingOptions()
         case 2:
-            assert False, par.notImplemented
+            statisticalAnalysisOptions()
         case 3:
-            assert False, par.notImplemented
-        case 4:
             displayModelOptions()
             modelChoice(path)
-        case 5:
-            #stat.getCrystalStatistics(path)
-            #bg.correctmcaLS(path)
-            #stat.checkRamanShiftDiff(path)
-            #stat.checkForPairSpectras(path, sys.argv[2])
-            stat.checkRamanShiftDiffForSpectraPairs(path, sys.argv[2], stat.checkForPairSpectras(path, sys.argv[2]))
-        # test case
-        case 6:
-            stat.getRamanShiftStats(path)
-        case other:
-            assert False, "nope"
-
-
-def modelChoice(path):
-    choice = int(input("Select option: "))
-    match choice:
-        case 1:
-            mod.rawModelling(path)
-        case 2:
-            mod.rawModelingWithNormalisation(path, 'CH2_str_sym')
-        case 3:
-            assert False, par.notImplemented
         case 4:
-            assert False, par.notImplemented
-        case 5:
-            assert False, par.notImplemented
+            exit()
         case other:
             assert False, "nope"
+
 
 def getFilenameList(path):
   fileList = []

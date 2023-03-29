@@ -45,6 +45,7 @@ def checkRamanShiftDiff(path):
 #            differencesList.append(signalShift - verifiedShift)
             file.write(str(shiftDiff) + '\n')
         file.close()
+
 def checkRamanShiftDiffForSpectraPairs(path1, path2, pairsDict):
     differencesList = []
     signals = par.SIGNAL_SHIFTS
@@ -52,7 +53,7 @@ def checkRamanShiftDiffForSpectraPairs(path1, path2, pairsDict):
         spectra1Dict = mod.getDataFromFile(path1+key)
         spectra2Dict = mod.getDataFromFile(path2+value)
         for signalName, signalShift in signals.items():
-            file = open(signalName + "_SF_shiftStab.txt", "a")
+            file = open(signalName + "_SF_shiftStabPaired.txt", "a")
             predictedShift1 = mod.searchForSignalIntensity(spectra1Dict, signalName)
             predictedShift2 = mod.searchForSignalIntensity(spectra2Dict, signalName)
             verifiedShift1 = mod.checkForMaximum(spectra1Dict, predictedShift1)

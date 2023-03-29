@@ -1,16 +1,20 @@
+import scipy as sc
 
 def correctmcaLS(pathToFile):
     lambdaConst = 1e9
     dataFile = open(pathToFile)
     data = np.loadtxt(dataFile, delimiter = ",", dtype="float")
+#Filling arrays with spectra data
     intensities = []
     shifts = []
-    origSize = len(data)
+    origSize = len(data) # spectra size
     for i in range(origSize):
         if data[i,0] <= 2950 and data[i,0]>= 2750:
             intensities.append(data[i, 1])
             shifts.append(data[i, 0])
+   #Cropped matrix size to the size of spectra "frame" we are considering for bg correction
     matrixSize = len(intensities)
+
     D = np.zeros((matrixSize - 2, matrixSize), dtype="float64")
     W = np.eye(matrixSize, dtype="float64")
     for index in range(matrixSize - 2):
