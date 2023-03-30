@@ -18,7 +18,7 @@ def displayOptions():
     print("2) Statistical analysis")
     print("3) Modelling")
     print("4) Exit")
-    actionChoice(sys.argv[1])
+    actionChoice()
 
 
 def plottingOptions():
@@ -55,7 +55,8 @@ def statisticalAnalysisActions():
 
     match action:
         case 1:
-            assert False, par.notImplemented
+           #stat.checkRamanShiftDiff()
+           vis.barCharts()
         case 2:
             assert False, par.notImplemented
         case 3:
@@ -92,7 +93,7 @@ def displayModelOptions():
     print(par.MAIN_MENU)
 
 
-def actionChoice(path):
+def actionChoice():
     number = int(input("Select option: "))
     match number:
         case 1:
@@ -100,8 +101,7 @@ def actionChoice(path):
         case 2:
             statisticalAnalysisOptions()
         case 3:
-            displayModelOptions()
-            modelChoice(path)
+            assert False, "not implemented yet"
         case 4:
             exit()
         case other:

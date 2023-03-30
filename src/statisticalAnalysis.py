@@ -29,7 +29,8 @@ def checkShifts(predictedShift, verifiedShift):
     else:
         print("The same")
 
-def checkRamanShiftDiff(path):
+def checkRamanShiftDiff():
+    path = input("Directory path: ")
     signals = par.SIGNAL_SHIFTS
     fileList = inter.getFilenameList(path)
     for fileName in fileList:
