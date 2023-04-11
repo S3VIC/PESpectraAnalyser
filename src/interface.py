@@ -114,8 +114,12 @@ def actionChoice():
         case 3:
             modellingOptions()
         case 4:
-            pathToFile = input("Path to file")
-            bg.correctmcaLS(pathToFile)
+            #pathToFile = input("Path to file")
+            pathToFile="data/input/raw/"
+            pathToOutputFiles="data/output/arLS/"
+            #bg.correctmcaLS(pathToFile)
+            #bg.correctAsLS(pathToFile)
+            bg.arLS(pathToFile, pathToOutputFiles)
         case 5:
             exit()
         case other:
