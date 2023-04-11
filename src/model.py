@@ -2,8 +2,6 @@ import numpy as np
 import params.parameters as par
 import src.interface as inter
 
-#Writing cryst calculated cryst parameters to a file (each time this function is evaluated
-# the output is appended to file
 
 def checkForMaximum(spectraDict, foundSignalShift):
     maxInt = foundSignalShift
@@ -19,19 +17,16 @@ def checkForMaximum(spectraDict, foundSignalShift):
     return maxInt
     
 
-def writeToFile(filename, crystList):
+def writeToFile(filename, crystValues):
   file = open(filename, "a")
-  for dataSet in crystList:
-    for k in range(4):
-      file.write(str(dataSet[k]))
-      if k != 3:
-        file.write(',')
+  for value in crystValues:
+    file.write(str(value))
     file.write('\n')
   file.close()
 
 
 def searchForSignalIntensity(spectraDict, signalName):
-  keys = list(spectraDict.keys())
+  keys = np.array(list(spectraDict.keys()))
   signalShift = par.SIGNAL_SHIFTS[signalName]
   minDistance = abs(signalShift - keys[0])
   realShift = keys[0]
@@ -43,8 +38,9 @@ def searchForSignalIntensity(spectraDict, signalName):
           realShift = keys[i]
   signalInten = spectraDict[realShift]
 
-#  return signalInten
-  return realShift
+  return signalInten
+  #return realShift
+
 
 def getDataFromFile(filePath):
   dataFile = np.loadtxt(filePath, delimiter=',')
@@ -60,51 +56,65 @@ def getDataFromFile(filePath):
 
 def rawModelling(path):
   filenamesList = inter.getFilenameList(path)
-  crystList = []
+  cryst1 = np.array([] ,dtype='float')
+  cryst2 = np.array([] ,dtype='float')
+  cryst3 = np.array([] ,dtype='float')
+  cryst4 = np.array([] ,dtype='float')
+
   for filename in filenamesList:
     spectraData = getDataFromFile(path + filename)
 
     intensityList = getIntensityList(spectraData)
-
+    #print(intensityList)
 #    Calculating cryst parameters
     crystParams = calculateCrystParams(intensityList)
-    crystList.append(crystParams)
-
-  writeToFile("test.csv", crystList)
+    cryst1 = np.append(cryst1, crystParams[0])
+    cryst2 = np.append(cryst2, crystParams[1])
+    cryst3 = np.append(cryst3, crystParams[2])
+    cryst4 = np.append(cryst4, crystParams[3])
+    
+  fileName1 = input("File Name for cryst1: ")
+  fileName2 = input("File Name for cryst2: ")
+  fileName3 = input("File Name for cryst3: ")
+  fileName4 = input("File Name for cryst4: ")
+  
+  writeToFile(fileName1 + ".csv", cryst1)
+  writeToFile(fileName2 + ".csv", cryst2)
+  writeToFile(fileName3 + ".csv", cryst3)
+  writeToFile(fileName4 + ".csv", cryst4)
 
 
 def getIntensityList(spectraData):
   signalNameList = list(par.SIGNAL_SHIFTS.keys())
-
-  intensityList = []
+  intensityList = np.array([], dtype='float')
 
   for i in signalNameList:
-    intensityList.append(searchForSignalIntensity(spectraData, par.SIGNAL_SHIFTS[i]))
+    intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, i))
 
   return intensityList
 
 
-def rawModelingWithNormalisation(path, normalisationCoeff):
-  fileList = inter.getFilenameList(path)
-  crystList = []
+def rawModelingWithNormalisation(path, normIntensity):
+  filelist = inter.getfilenamelist(path)
+  crystlist = np.array([], dtype='float')
 
-  for filename in fileList:
-    spectraDataNorm = getDataFromFile(path + filename)
+  for filename in filelist:
+    spectradatanorm = getdatafromfile(path + filename)
 
-    normalisationIntensity = searchForSignalIntensity(spectraDataNorm, par.SIGNAL_SHIFTS[normalisationCoeff])
+    normalisationintensity = searchforsignalintensity(spectradatanorm, par.signal_shifts[normIntensity])
 
-    xCoordinates = list(spectraDataNorm.keys())
+    xcoordinates = list(spectradatanorm.keys())
 
-    for i in xCoordinates:
-      spectraDataNorm[i] = spectraDataNorm[i] / normalisationIntensity
+    for i in xcoordinates:
+      spectradatanorm[i] = spectradatanorm[i] / normalisationintensity
 
-    intensityList = getIntensityList(spectraDataNorm)
+    intensitylist = getintensitylist(spectradatanorm)
 
-    crystParams = calculateCrystParams(intensityList)
+    crystparams = calculatecrystparams(intensitylist)
 
-    crystList.append(crystParams)
+    crystlist = np.append(crystlist, crystparams)
 
-  writeToFile("raw_normalised" + normalisationCoeff + ".csv", crystList)
+  writetofile("raw_normalised" + normIntensity + ".csv", crystlist)
 
 
 def calculateCrystParams(intensityList):
@@ -112,14 +122,13 @@ def calculateCrystParams(intensityList):
   cryst2 = intensityList[2] / intensityList[3]  # I3 / I4
   cryst3 = intensityList[2] / intensityList[4]  # I3 / I5
   cryst4 = intensityList[2] / intensityList[5]  # I3 / I6
+  #crystr5 = 1416/(const * 1295 + 1303) do implementacji zwłaszcza do metod normalizacyjnych!!
 
-  crystParams = [
+  crystParams = np.array([
     cryst1,
     cryst2,
     cryst3,
     cryst4
-  ]
+  ], dtype='float')
 
   return crystParams
-
-

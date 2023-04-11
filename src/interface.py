@@ -17,7 +17,8 @@ def displayOptions():
     print("1) Plotting")
     print("2) Statistical analysis")
     print("3) Modelling")
-    print("4) Exit")
+    print("4) Background correction")
+    print("5) Exit")
     actionChoice()
 
 
@@ -25,7 +26,8 @@ def plottingOptions():
     print("1) Raw plotting")
     print("2) Plotting with Gal peaks")
     print("3) Raw and Gal plotting")
-    print("4) Maine menu")
+    print("4) Bar chart")
+    print("5) Maine menu")
     plottingActions()
 
 
@@ -39,6 +41,8 @@ def plottingActions():
         case 3:
             assert False, par.notImplemented
         case 4:
+            vis.barCharts()
+        case 5:
             mainMenu()
             
 
@@ -55,10 +59,12 @@ def statisticalAnalysisActions():
 
     match action:
         case 1:
-           #stat.checkRamanShiftDiff()
-           vis.barCharts()
+            stat.checkRamanShiftDiff()
         case 2:
-            assert False, par.notImplemented
+            path1 = input("Directory 1 path: ")
+            path2 = input("Directory 2 path: ")
+            pairDict = stat.checkForPairSpectras(path1, path2)
+            stat.checkRamanShiftDiffForSpectraPairs(path1, path2, pairDict)
         case 3:
             assert False, par.notImplemented
         case 4:
@@ -68,7 +74,8 @@ def statisticalAnalysisActions():
 def modellingOptions():
     print("1) Raw modelling (based on raw intensities)")
     print("2) Modelling bg corrected spectras")
-    print("3) Main menu")
+    print("3) Search for peaks")
+    print("4) Main menu")
     modellingActions()
 
 
@@ -76,10 +83,13 @@ def modellingActions():
     action = int(input("Select option: "))
     match action:
         case 1:
-            assert False, par.notImplemented
+            path = input("Path to .CSV files: ")
+            mod.rawModelling(path)
         case 2:
             assert False, par.notImplemented
         case 3:
+            stat.searchForPeaks()
+        case 4:
             mainMenu()
         case other:
             assert False, "Wrong option"
@@ -91,6 +101,7 @@ def displayModelOptions():
     print(par.OMNIC_BACK_CORRECTED)
     print(par.FULL_PLOTTING_OPTION)
     print(par.MAIN_MENU)
+    modellingActions()
 
 
 def actionChoice():
@@ -101,8 +112,11 @@ def actionChoice():
         case 2:
             statisticalAnalysisOptions()
         case 3:
-            assert False, "not implemented yet"
+            modellingOptions()
         case 4:
+            pathToFile = input("Path to file")
+            bg.correctmcaLS(pathToFile)
+        case 5:
             exit()
         case other:
             assert False, "nope"
