@@ -85,6 +85,7 @@ def modellingActions():
         case 1:
             path = input("Path to .CSV files: ")
             mod.rawModelling(path)
+#            mod.calculateCryst1(path)
         case 2:
             assert False, par.notImplemented
         case 3:

@@ -2,19 +2,24 @@ import numpy as np
 import params.parameters as par
 import src.interface as inter
 
-
+#returns array containing shift and intensity respectively of the signal searched based on the first prediction
 def checkForMaximum(spectraDict, foundSignalShift):
-    maxInt = foundSignalShift
+    maxInt = spectraDict[foundSignalShift]
     spectraShifts = list(spectraDict.keys())
     shiftIndex = spectraShifts.index(foundSignalShift)
+    realShift = spectraShifts.index(foundSignalShift)
     for i in range(5):
         if spectraDict[spectraShifts[shiftIndex - i]] > maxInt:
-          maxInt = spectraShifts[shiftIndex - i]
+          maxInt = spectraDict[spectraShifts[shiftIndex - i]]
+          realShift = spectraShifts[shiftIndex - i]
     
     for i in range(5):
         if spectraDict[spectraShifts[shiftIndex + i]] > maxInt:
-          maxInt = spectraShifts[shiftIndex + i]
-    return maxInt
+          maxInt = spectraDict[spectraShifts[shiftIndex - i]]
+          realShift = spectraShifts[shiftIndex - i]
+    signalParams = np.array([realShift, maxInt], dtype = 'float')
+
+    return signalParams
     
 
 def writeToFile(filename, crystValues):
@@ -24,22 +29,22 @@ def writeToFile(filename, crystValues):
     file.write('\n')
   file.close()
 
-
+#returns signal params array - corrected shift and intensity respectively
 def searchForSignalIntensity(spectraDict, signalName):
   keys = np.array(list(spectraDict.keys()))
   signalShift = par.SIGNAL_SHIFTS[signalName]
   minDistance = abs(signalShift - keys[0])
-  realShift = keys[0]
+  predictedShift = keys[0]
 
   for i in range(1, len(keys)):
       distance = abs(signalShift - keys[i])
       if distance < minDistance:
           minDistance = distance
-          realShift = keys[i]
-  signalInten = spectraDict[realShift]
+          predictedShift = keys[i]
+  predictedInten= spectraDict[predictedShift]
+  signalParams = checkForMaximum(spectraDict, predictedShift)
 
-  return signalInten
-  #return realShift
+  return np.array(signalParams, dtype='float')
 
 
 def getDataFromFile(filePath):
@@ -53,35 +58,65 @@ def getDataFromFile(filePath):
 
   return spectraData
 
-
-def rawModelling(path):
-  filenamesList = inter.getFilenameList(path)
-  cryst1 = np.array([] ,dtype='float')
-  cryst2 = np.array([] ,dtype='float')
-  cryst3 = np.array([] ,dtype='float')
-  cryst4 = np.array([] ,dtype='float')
-
-  for filename in filenamesList:
-    spectraData = getDataFromFile(path + filename)
-
-    intensityList = getIntensityList(spectraData)
-    #print(intensityList)
-#    Calculating cryst parameters
-    crystParams = calculateCrystParams(intensityList)
-    cryst1 = np.append(cryst1, crystParams[0])
-    cryst2 = np.append(cryst2, crystParams[1])
-    cryst3 = np.append(cryst3, crystParams[2])
-    cryst4 = np.append(cryst4, crystParams[3])
+def calculateCryst1(path, outputFileName):
+    cryst1 = np.array([], dtype='float')
     
-  fileName1 = input("File Name for cryst1: ")
-  fileName2 = input("File Name for cryst2: ")
-  fileName3 = input("File Name for cryst3: ")
-  fileName4 = input("File Name for cryst4: ")
-  
-  writeToFile(fileName1 + ".csv", cryst1)
-  writeToFile(fileName2 + ".csv", cryst2)
-  writeToFile(fileName3 + ".csv", cryst3)
-  writeToFile(fileName4 + ".csv", cryst4)
+    spectraData = getDataFromFile(path)
+    ramanInt = np.array([], dtype='float')
+    ramanInt = np.append(ramanInt, searchForSignalIntensity(spectraData, 'CH2_str_sym'))
+    ramanInt = np.append(ramanInt, searchForSignalIntensity(spectraData, 'CH2_str_asym'))
+    cryst1 = np.append(cryst1, ramanInt[1] / ramanInt[3])
+    
+    writeToFile(outputFileName + ".csv", cryst1)
+
+
+def calculateCryst2(path, outputFileName):
+    cryst2 = np.array([], dtype='float')
+    spectraData = getDataFromFile(path)
+    ramanInt = np.array([], dtype='float')
+    ramanInt = np.append(ramanInt, searchForSignalIntensity(spectraData, 'CH2_ben_cryst'))
+    ramanInt = np.append(ramanInt, searchForSignalIntensity(spectraData, 'CH2_ben_amorf'))
+    cryst2 = np.append(cryst2, ramanInt[1] / ramanInt[3])
+    
+    writeToFile(outputFileName + ".csv", cryst2)
+
+
+def calculateCryst3(path, outputFileName):
+    cryst3 = np.array([], dtype='float')
+    
+    spectraData = getDataFromFile(path)
+    ramanInt = np.array([], dtype='float')
+    ramanInt = np.append(ramanInt, searchForSignalIntensity(spectraData, 'CH2_ben_cryst'))
+    ramanInt = np.append(ramanInt, searchForSignalIntensity(spectraData, 'CH2_twist_amorf'))
+    cryst3 = np.append(cryst3, ramanInt[1] / ramanInt[3])
+    
+    writeToFile(outputFileName + ".csv", cryst3)
+
+
+def calculateCryst4(path, outputFileName):
+    cryst4 = np.array([], dtype='float')
+
+    spectraData = getDataFromFile(path)
+    ramanInt = np.array([], dtype='float')
+    ramanInt = np.append(ramanInt, searchForSignalIntensity(spectraData, 'CH2_ben_cryst'))
+    ramanInt = np.append(ramanInt, searchForSignalIntensity(spectraData, 'CC_str_amorf'))
+    cryst4 = np.append(cryst4, ramanInt[1] / ramanInt[3])
+    
+    writeToFile(outputFileName + ".csv", cryst4)
+
+
+def rawModelling(path):    
+    fileNamesList = inter.getFilenameList(path)
+    fileName1 = input("File Name for cryst1: ")
+    fileName2 = input("File Name for cryst2: ")
+    fileName3 = input("File Name for cryst3: ")
+    fileName4 = input("File Name for cryst4: ")
+    for file in fileNamesList:
+        calculateCryst1(path + file, fileName1)
+        calculateCryst2(path + file, fileName2)
+        calculateCryst3(path + file, fileName3)
+        calculateCryst4(path + file, fileName4)
+        print("File : " + file + "DONE")
 
 
 def getIntensityList(spectraData):
