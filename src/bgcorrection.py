@@ -141,13 +141,13 @@ def arLS(pathToInputFiles, pathToOutputFiles):
             w = wt
         outputFile = open(pathToOutputFiles + "corr_" + file, "w")
         for i in range(N):
-            outputFile.write(str(shifts[i]) + "," + str(x[i]))
+            outputFile.write(str(shifts[i]) + "," + str(x[i]) + "\n")
         outputFile.close()
         print("File : " + file + " DONE")
-        mlt.use("SVG")
-        plt.plot(shifts, x - z)
-        plt.plot(shifts, z)
-        plt.plot(shifts, x)
-        plt.savefig(file[:-3] + ".svg")
-        plt.close()
+        #mlt.use("SVG")
+        #plt.plot(shifts, x - z)
+        #plt.plot(shifts, z)
+        #plt.plot(shifts, x)
+        #plt.savefig(pathToOutputFiles + "images/" + file[:-3] + ".svg")
+        #plt.close()
         

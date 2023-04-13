@@ -25,8 +25,7 @@ def checkForMaximum(spectraDict, foundSignalShift):
 def writeToFile(filename, crystValues):
   file = open(filename, "a")
   for value in crystValues:
-    file.write(str(value))
-    file.write('\n')
+    file.write(str(value) + "\n")
   file.close()
 
 #returns signal params array - corrected shift and intensity respectively
@@ -107,16 +106,48 @@ def calculateCryst4(path, outputFileName):
 
 def rawModelling(path):    
     fileNamesList = inter.getFilenameList(path)
-    fileName1 = input("File Name for cryst1: ")
-    fileName2 = input("File Name for cryst2: ")
-    fileName3 = input("File Name for cryst3: ")
-    fileName4 = input("File Name for cryst4: ")
-    for file in fileNamesList:
-        calculateCryst1(path + file, fileName1)
-        calculateCryst2(path + file, fileName2)
-        calculateCryst3(path + file, fileName3)
-        calculateCryst4(path + file, fileName4)
-        print("File : " + file + "DONE")
+    inter.displayCrystParamsInfo()
+    paramsToCalculate = int(input("Which cryst params to calculate: "))
+    match paramsToCalculate:
+        case 1:
+            fileName1 = input("File Name for cryst1: ")
+            for file in fileNamesList:
+                calculateCryst1(path + file, fileName1)
+                print("File : " + file + " DONE")
+
+        case 2:
+            fileName2 = input("File Name for cryst2: ")
+            for file in fileNamesList:
+                calculateCryst2(path + file, fileName2)
+                print("File : " + file + " DONE")
+
+        case 3:
+            fileName3 = input("File Name for cryst3: ")
+            for file in fileNamesList:
+                calculateCryst3(path + file, fileName3)
+                print("File : " + file + " DONE")
+
+        case 4:
+            fileName4 = input("File Name for cryst4: ")
+            for file in fileNamesList:
+                calculateCryst4(path + file, fileName4)
+                print("File : " + file + " DONE")
+
+        case 5:
+            fileName1 = input("File Name for cryst1: ")
+            fileName2 = input("File Name for cryst2: ")
+            fileName3 = input("File Name for cryst3: ")
+            fileName4 = input("File Name for cryst4: ")
+            for file in fileNamesList:
+                calculateCryst1(path + file, fileName1)
+                calculateCryst2(path + file, fileName2)
+                calculateCryst3(path + file, fileName3)
+                calculateCryst4(path + file, fileName4)
+                print("File : " + file + " DONE")
+
+        case other:
+            assert False, "Wrong option" 
+
 
 
 def getIntensityList(spectraData):

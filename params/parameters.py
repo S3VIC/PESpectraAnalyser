@@ -26,6 +26,12 @@ SIGNAL_SHIFTS = {
     'CH2_twist_amorf' : 1303,
     'CC_str_amorf' : 1080
 }
+
+cryst1Prompt = "Calculate cryst1"
+cryst2Prompt = "Calculate cryst2"
+cryst3Prompt = "Calculate cryst3"
+cryst4Prompt = "Calculate cryst4"
+crystPrompt = "Calculate all cryst params"
 # SIGNAL_SHIFTS_KEY_LIST = list(SIGNAL_SHIFTS.keys())
 
 # plotting parameters

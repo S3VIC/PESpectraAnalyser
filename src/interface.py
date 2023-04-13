@@ -136,3 +136,10 @@ def getFilenameList(path):
         fileList.append(filename)
   return fileList
 
+def displayCrystParamsInfo():
+    print(par.cryst1Prompt)
+    print(par.cryst2Prompt)
+    print(par.cryst3Prompt)
+    print(par.cryst4Prompt)
+    print(par.crystPrompt)
+    
