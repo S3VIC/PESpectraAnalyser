@@ -49,8 +49,9 @@ def plottingActions():
 def statisticalAnalysisOptions():
     print("1) Raman shift stability (raw)")
     print("2) Raman shift stabilility for paired spectras (OMNIC bg correction)")
-    print("2) Raman shift stability (after bg correction)")
-    print("4) Main menu")
+    print("3) Raman shift stability (after bg correction)")
+    print("4) Compare cryst params")
+    print("5) Main menu")
     statisticalAnalysisActions()
 
 
@@ -67,7 +68,11 @@ def statisticalAnalysisActions():
             stat.checkRamanShiftDiffForSpectraPairs(path1, path2, pairDict)
         case 3:
             assert False, par.notImplemented
-        case 4:
+        case 4: 
+            file1 = input("Path for 1st file with cryst params: ")
+            file2 = input("Path for 2nd file with cryst params: ")
+            stat.compareCrystParams(file1, file2)
+        case 5:
             mainMenu()
 
 

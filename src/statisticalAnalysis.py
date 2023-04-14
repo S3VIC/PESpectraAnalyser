@@ -2,6 +2,7 @@ import params.parameters as par
 import src.interface as inter
 import numpy as np
 import src.model as mod
+import src.visualiser as vis
 from scipy.signal import find_peaks
 
 
@@ -93,3 +94,49 @@ def searchForPeaks():
         print(len(peakIndices[0]))
         print(peakIndices[0])
             
+def compareCrystParams(file1, file2):
+    data1 = np.loadtxt(file1)
+    data2 = np.loadtxt(file2)
+
+    if(len(data1) == len(data2)):
+        sameValue = 0
+        greaterValue = 0
+        lowerValue = 0
+        madeValid = 0
+        madeInValid = 0
+        stillInValid = 0
+        for i in range(len(data1)):
+            if((data1[i] < 1) and (data1[i] > 0)):
+                if data2[i] > 1:
+                    madeInValid = madeInValid + 1
+
+                if data2[i] > data1[i]:
+                    greaterValue = greaterValue + 1
+
+                elif data2[i] < data1[i]:
+                    lowerValue = lowerValue + 1
+
+                else:
+                    sameValue = sameValue + 1
+
+            if (data1[i] > 1) or (data1[i] < 0):
+                if (data2[i] > 1) or (data2[i] < 0):
+                    stillInValid = stillInValid + 1
+
+                if (data2[i] < 1) and (data2[i] > 0):
+                    madeValid = madeValid + 1
+
+                if data2[i] > data1[i] :
+                    greaterValue = greaterValue + 1
+
+                if data2[i] < data1[i] :
+                    lowerValue = lowerValue + 1
+        xTicks = ["mniejsza",
+                  "taka sama",
+                  "większa"
+                ]
+        values = [ lowerValue, sameValue, greaterValue ] 
+        vis.plotBarChart("Cryst1_wartości", xTicks, values)
+    else:
+       print("Sizes do not match!")
+

@@ -17,6 +17,7 @@ RAW_WITH_BASELINE_CORRECTION = "4) Modelling with baseline correction"
 MAIN_MENU = "5) Back to main menu"
 
 FILENAME_RAW_MODEL = "rawCryst.csv"
+
 # model params
 SIGNAL_SHIFTS = {
     'CH2_str_sym' : 2848,
@@ -27,13 +28,14 @@ SIGNAL_SHIFTS = {
     'CC_str_amorf' : 1080
 }
 
-cryst1Prompt = "Calculate cryst1"
-cryst2Prompt = "Calculate cryst2"
-cryst3Prompt = "Calculate cryst3"
-cryst4Prompt = "Calculate cryst4"
-crystPrompt = "Calculate all cryst params"
+
+cryst1Prompt = "1) Calculate cryst1"
+cryst2Prompt = "2) Calculate cryst2"
+cryst3Prompt = "3) Calculate cryst3"
+cryst4Prompt = "4) Calculate cryst4"
+crystPrompt = "5) Calculate all cryst params"
+
 # SIGNAL_SHIFTS_KEY_LIST = list(SIGNAL_SHIFTS.keys())
 
 # plotting parameters
-
 notImplemented = "Not implemented yet"

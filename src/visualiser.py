@@ -61,4 +61,11 @@ def barCharts():
         plt.close()
 
       
+def plotBarChart(title, xTicks, counts):
+    fig, ax = plt.subplots()
+    fig.suptitle(title)
+    ax.set_ylabel("Liczba")
+    plt.bar(xTicks, counts)
+    plt.savefig(title + ".png")
+    plt.close()
     
