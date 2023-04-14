@@ -122,7 +122,7 @@ def actionChoice():
         case 4:
             #pathToFile = input("Path to file")
             pathToFile="data/input/raw/"
-            pathToOutputFiles="data/output/arLS/"
+            pathToOutputFiles="data/output/"
             #bg.correctmcaLS(pathToFile)
             #bg.correctAsLS(pathToFile)
             bg.arLS(pathToFile, pathToOutputFiles)

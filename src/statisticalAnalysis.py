@@ -93,7 +93,8 @@ def searchForPeaks():
         peakIndices = find_peaks(yCoordinates, width = 1)
         print(len(peakIndices[0]))
         print(peakIndices[0])
-            
+           
+
 def compareCrystParams(file1, file2):
     data1 = np.loadtxt(file1)
     data2 = np.loadtxt(file2)
@@ -136,7 +137,15 @@ def compareCrystParams(file1, file2):
                   "większa"
                 ]
         values = [ lowerValue, sameValue, greaterValue ] 
-        vis.plotBarChart("Cryst1_wartości", xTicks, values)
+        xTicksValid = [ 
+                    "wyjście poza zakres",
+                    "pozostał nieważny",
+                    "ważny zakres",
+                ]
+
+        valuesValid = [madeInValid, stillInValid, madeValid]
+        #vis.plotBarChart("Cryst1_wartości", xTicks, values)
+        vis.plotBarChart("Cryst1_ważność", xTicksValid, valuesValid)
     else:
        print("Sizes do not match!")
 

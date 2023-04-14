@@ -14,8 +14,20 @@ def correctmcaLS(pathToFile):
     intensities = np.array([], dtype='float')
     shifts = np.array([], dtype='float')
     origSize = len(data) # spectra size
+    
+    print("1) 2700 - 3000")
+    print("2) 950 - 1500")
+    spectraRangeChoice = int(input("Choose spectra range to correct: "))
+    match spectraRangeChoice:
+        case 1:
+            spectraRange = np.array([3000, 2700], dtype='int')
+        case 2:
+            spectraRange = np.array([1500, 950], dtype='int')
+        case other:
+            assert False, "Wrong option"
+
     for i in range(origSize):
-        if data[i,0] <= 3000 and data[i,0]>= 2700:
+        if data[i,0] <= spectraRange[0] and data[i,0]>= spectraRange[1]:
             intensities = np.append(intensities, (data[i, 1]))
             shifts = np.append(shifts, (data[i, 0]))
    #Cropped matrix size to the size of spectra "frame" we are considering for bg correction
@@ -70,10 +82,22 @@ def correctAsLS(pathToFile):
     x = np.array([], dtype='float')
     shifts = np.array([], dtype='float')
     origSize = len(data) # spectra size
+    print("1) 2700 - 3000")
+    print("2) 950 - 1500")
+    spectraRangeChoice = int(input("Choose spectra range to correct: "))
+    match spectraRangeChoice:
+        case 1:
+            spectraRange = np.array([3000, 2700], dtype='int')
+        case 2:
+            spectraRange = np.array([1500, 950], dtype='int')
+        case other:
+            assert False, "Wrong option"
+
     for i in range(origSize):
-        if data[i,0] <= 3000 and data[i,0]>= 2700:
-            x = np.append(x, (data[i, 1]))
+        if data[i,0] <= spectraRange[0] and data[i,0]>= spectraRange[1]:
+            intensities = np.append(intensities, (data[i, 1]))
             shifts = np.append(shifts, (data[i, 0]))
+ 
     m = len(x)
     e = np.ones(m, dtype='float64')
     values = np.array([e, -2*e, e])
@@ -101,6 +125,16 @@ def correctAsLS(pathToFile):
 
 def arLS(pathToInputFiles, pathToOutputFiles):
     fileNamesList = inter.getFilenameList(pathToInputFiles)
+    print("1) 2700 - 3000")
+    print("2) 950 - 1500")
+    spectraRangeChoice = int(input("Choose spectra range to correct: "))
+    match spectraRangeChoice:
+        case 1:
+            spectraRange = np.array([3000, 2700], dtype='int')
+        case 2:
+            spectraRange = np.array([1500, 950], dtype='int')
+        case other:
+            assert False, "Wrong option"
     for file in fileNamesList:
         lambdaConst = 1e8
         #termination precission
@@ -112,7 +146,7 @@ def arLS(pathToInputFiles, pathToOutputFiles):
         shifts = np.array([], dtype='float')
         origSize = len(data) # spectra size
         for i in range(origSize):
-            if data[i,0] <= 3000 and data[i,0]>= 2700:
+            if data[i,0] <= spectraRange[0] and data[i,0]>= spectraRange[1]:
                 x = np.append(x, (data[i, 1]))
                 shifts = np.append(shifts, (data[i, 0]))
         N = len(x)
@@ -148,6 +182,6 @@ def arLS(pathToInputFiles, pathToOutputFiles):
         #plt.plot(shifts, x - z)
         #plt.plot(shifts, z)
         #plt.plot(shifts, x)
-        #plt.savefig(pathToOutputFiles + "images/" + file[:-3] + ".svg")
+        #plt.savefig(pathToOutputFiles + file[:-3] + ".svg")
         #plt.close()
         
