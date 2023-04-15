@@ -20,43 +20,49 @@ def checkForMaximum(spectraDict, foundSignalShift):
     signalParams = np.array([realShift, maxInt], dtype = 'float')
 
     return signalParams
-    
 
+
+#saves data to file from an array
 def writeToFile(filename, crystValues):
   file = open(filename, "a")
   for value in crystValues:
     file.write(str(value) + "\n")
   file.close()
 
+
 #returns signal params array - corrected shift and intensity respectively
 def searchForSignalIntensity(spectraDict, signalName):
-  keys = np.array(list(spectraDict.keys()))
-  signalShift = par.SIGNAL_SHIFTS[signalName]
-  minDistance = abs(signalShift - keys[0])
-  predictedShift = keys[0]
+  
+    keys = np.array(list(spectraDict.keys()))
+    signalShift = par.SIGNAL_SHIFTS[signalName]
+    minDistance = abs(signalShift - keys[0])
+    predictedShift = keys[0]
 
-  for i in range(1, len(keys)):
-      distance = abs(signalShift - keys[i])
-      if distance < minDistance:
-          minDistance = distance
-          predictedShift = keys[i]
-  predictedInten= spectraDict[predictedShift]
-  signalParams = checkForMaximum(spectraDict, predictedShift)
+    for i in range(1, len(keys)):
+        distance = abs(signalShift - keys[i])
+        if distance < minDistance:
+            minDistance = distance
+            predictedShift = keys[i]
+        predictedInten= spectraDict[predictedShift]
+        signalParams = checkForMaximum(spectraDict, predictedShift)
 
-  return np.array(signalParams, dtype='float')
+    return np.array(signalParams, dtype='float')
 
 
+#reads data from file and returns it in form of dictionary {RAMAN SHIFT : INTENSITY} 
 def getDataFromFile(filePath):
-  dataFile = np.loadtxt(filePath, delimiter=',')
-  xCoordinates = np.array(dataFile[:, 0], dtype='float')
-  yCoordinates = np.array(dataFile[:, 1], dtype='float')
-  spectraData = {}
+    dataFile = np.loadtxt(filePath, delimiter=',')
+    xCoordinates = np.array(dataFile[:, 0], dtype='float')
+    yCoordinates = np.array(dataFile[:, 1], dtype='float')
+    spectraData = {}
 
-  for i in range(xCoordinates.size):
-    spectraData[xCoordinates[i]] = yCoordinates[i]
+    for i in range(xCoordinates.size):
+        spectraData[xCoordinates[i]] = yCoordinates[i]
 
-  return spectraData
+    return spectraData
 
+
+#series of functions calculating particular cryst param
 def calculateCryst1(path, outputFileName):
     cryst1 = np.array([], dtype='float')
     
@@ -103,61 +109,75 @@ def calculateCryst4(path, outputFileName):
     
     writeToFile(outputFileName + ".csv", cryst4)
 
+#
+def calculateSingleCryst(path, fileNamesList, choice):
+    fileName = input("File Name for cryst{0}: ".format(choice))
+    for file in fileNamesList:
+        match choice:
+            case 1:
+                calculateCryst1(path + file, fileName)
+            case 2:
+                calculateCryst2(path + file, fileName)
+            case 3:
+                calculateCryst3(path + file, fileName)
+            case 4:
+                calculateCryst4(path + file, fileName)
+            case other:
+                assert False, "Wrong option"
+        print("File : " + file + " DONE")
 
-def rawModelling(path):    
+
+def calculateAllCryst(path, fileNamesList):
+    outputFileNames = np.array([], dtype='string')
+    for i in range(4):
+        fileName = input("File name for cryst{0}: ".format(i + 1))
+        outputFileNames = np.append(outputFileNames, fileName)
+    for file in fileNamesList:
+        calculateCryst1(path + file, outputFileNames[0])
+        calculateCryst2(path + file, outputFileNames[1])
+        calculateCryst3(path + file, outputFileNames[2])
+        calculateCryst4(path + file, outputFileNames[3])
+        print("File : " + file + " DONE")
+
+
+def calculateCrysts(path):    
     fileNamesList = inter.getFilenameList(path)
     inter.displayCrystParamsInfo()
-    paramsToCalculate = int(input("Which cryst params to calculate: "))
-    match paramsToCalculate:
-        case 1:
-            fileName1 = input("File Name for cryst1: ")
-            for file in fileNamesList:
-                calculateCryst1(path + file, fileName1)
-                print("File : " + file + " DONE")
-
-        case 2:
-            fileName2 = input("File Name for cryst2: ")
-            for file in fileNamesList:
-                calculateCryst2(path + file, fileName2)
-                print("File : " + file + " DONE")
-
-        case 3:
-            fileName3 = input("File Name for cryst3: ")
-            for file in fileNamesList:
-                calculateCryst3(path + file, fileName3)
-                print("File : " + file + " DONE")
-
-        case 4:
-            fileName4 = input("File Name for cryst4: ")
-            for file in fileNamesList:
-                calculateCryst4(path + file, fileName4)
-                print("File : " + file + " DONE")
-
+    choice = int(input("Which cryst params to calculate: "))
+    match choice:
+        case 1 | 2 | 3 | 4:
+            calculateSingleCryst(path, fileNamesList, choice)
         case 5:
-            fileName1 = input("File Name for cryst1: ")
-            fileName2 = input("File Name for cryst2: ")
-            fileName3 = input("File Name for cryst3: ")
-            fileName4 = input("File Name for cryst4: ")
-            for file in fileNamesList:
-                calculateCryst1(path + file, fileName1)
-                calculateCryst2(path + file, fileName2)
-                calculateCryst3(path + file, fileName3)
-                calculateCryst4(path + file, fileName4)
-                print("File : " + file + " DONE")
-
+            calculateAllCryst(path, fileNamesList)
         case other:
             assert False, "Wrong option" 
 
 
 
 def getIntensityList(spectraData):
-  signalNameList = list(par.SIGNAL_SHIFTS.keys())
-  intensityList = np.array([], dtype='float')
+    intensityList = np.array([], dtype='float')
+    choice = int(input("Which cryst params to calculate: ")) 
+    match choice:
+        case 1:
+            intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CH2_str_sym'))
+            intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CH2_str_asym'))
+        case 2:
+            intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CH2_ben_cryst'))
+            intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CH2_ben_amorf'))
+        case 3:
+            intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CH2_ben_cryst'))
+            intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CH2_twist_amorf'))
+        case 4:
+            intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CH2_ben_cryst'))
+            intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CC_str_amorf'))
+        case 5:
+            signalNameList = list(par.SIGNAL_SHIFTS.keys())
+            for i in signalNameList:
+                intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, i))
+        case other:
+            assert False, "Wrong option"
 
-  for i in signalNameList:
-    intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, i))
-
-  return intensityList
+    return intensityList
 
 
 def rawModelingWithNormalisation(path, normIntensity):

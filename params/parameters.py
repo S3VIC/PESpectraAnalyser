@@ -6,6 +6,38 @@ GAL_PEAKS_PLOTTING = "2) Plot spectra with gal_peaks grid"
 FULL_PLOTTING_OPTION = "3) Plot both: raw spectra and with gal_peaks"
 MODELLING_ACTIONS = "4) Modelling options"
 
+#interface prompts
+SELECT_PROMPT = "Select option: "
+INITIAL_PROMPTS = [
+    "1) Plotting",
+    "2) Statistical analysis",
+    "3) Modelling",
+    "4) Background correction",
+    "5) Exit"
+    ]
+
+PLOTTING_OPTIONS = [
+    "1) Raw plotting",
+    "2) Plotting with Gal peaks",
+    "3) Raw and Gal plotting",
+    "4) Bar chart",
+    "5) Maine menu",
+    ]
+
+STATISTICAL_ANALYSIS_OPTIONS = [
+    "1) Raman shift stability (raw)",
+    "2) Raman shift stabilility for paired spectras (OMNIC bg correction)",
+    "3) Raman shift stability (after bg correction)",
+    "4) Compare cryst params",
+    "5) Main menu"
+    ]
+MODELLING_OPTIONS = [
+    "1) Raw modelling (based on raw intensities)",
+    "2) Modelling bg corrected spectras",
+    "3) Search for peaks",
+    "4) Main menu",
+    ]
+
 # general params
 FILENAME_EXTENSION = "CSV"
 
