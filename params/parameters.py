@@ -37,7 +37,10 @@ MODELLING_OPTIONS = [
     "3) Search for peaks",
     "4) Main menu",
     ]
-
+BGCORRECTION_OPTIONS = [
+    "1) asLS",
+    "2) arLS"
+    ]
 # general params
 FILENAME_EXTENSION = "CSV"
 
@@ -53,11 +56,11 @@ FILENAME_RAW_MODEL = "rawCryst.csv"
 # model params
 SIGNAL_SHIFTS = {
     'CH2_str_sym' : 2848,
-    'CH2_str_asym' : 2882,
-    'CH2_ben_cryst' : 1416,
+    'CH3_str_asym' : 2882,
     'CH2_ben_amorf' : 1440,
-    #'CH2_twist_amorf' : 1295
+    'CH2_ben_cryst' : 1416,
     'CH2_twist_amorf' : 1303,
+    'CH2_twist_cryst_int' : 1295,
     'CC_str_amorf' : 1080
 }
 

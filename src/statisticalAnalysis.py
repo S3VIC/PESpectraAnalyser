@@ -1,7 +1,7 @@
 import params.parameters as par
 import src.interface as inter
 import numpy as np
-import src.model as mod
+import src.crystals as cr 
 import src.visualiser as vis
 from scipy.signal import find_peaks
 
@@ -42,9 +42,9 @@ def checkRamanShiftDiff():
         for signalName, signalShift in signals.items():
             differencesList = []
             file = open(signalName + "_SF_shiftStab.csv", "a")
-            spectraDict = mod.getDataFromFile(path + fileName)
-            predictedShift = mod.searchForSignalIntensity(spectraDict, signalName)
-            verifiedShift = mod.checkForMaximum(spectraDict, predictedShift)
+            spectraDict = cr.getDataFromFile(path + fileName)
+            predictedShift = cr.searchForSignalIntensity(spectraDict, signalName)
+            verifiedShift = cr.checkForMaximum(spectraDict, predictedShift)
             shiftDiff = signalShift - verifiedShift
             file.write(str(shiftDiff) + '\n')
         file.close()
@@ -55,15 +55,15 @@ def checkRamanShiftDiffForSpectraPairs(path1, path2, pairsDict):
     signals = par.SIGNAL_SHIFTS
 
     for key, value in pairsDict.items():
-        spectra1Dict = mod.getDataFromFile(path1+key)
-        spectra2Dict = mod.getDataFromFile(path2+value)
+        spectra1Dict = cr.getDataFromFile(path1+key)
+        spectra2Dict = cr.getDataFromFile(path2+value)
     
         for signalName, signalShift in signals.items():
             file = open(signalName + "_SF_shiftStabPaired.csv", "a")
-            predictedShift1 = mod.searchForSignalIntensity(spectra1Dict, signalName)
-            predictedShift2 = mod.searchForSignalIntensity(spectra2Dict, signalName)
-            verifiedShift1 = mod.checkForMaximum(spectra1Dict, predictedShift1)
-            verifiedShift2 = mod.checkForMaximum(spectra2Dict, predictedShift2)
+            predictedShift1 = cr.searchForSignalIntensity(spectra1Dict, signalName)
+            predictedShift2 = cr.searchForSignalIntensity(spectra2Dict, signalName)
+            verifiedShift1 = cr.checkForMaximum(spectra1Dict, predictedShift1)
+            verifiedShift2 = cr.checkForMaximum(spectra2Dict, predictedShift2)
             shiftDiff = verifiedShift1 - verifiedShift2
             file.write(str(shiftDiff) + '\n')
         
@@ -144,7 +144,7 @@ def compareCrystParams(file1, file2):
                 ]
 
         valuesValid = [madeInValid, stillInValid, madeValid]
-        #vis.plotBarChart("Cryst1_wartości", xTicks, values)
+        vis.plotBarChart("Cryst1_wartości", xTicks, values)
         vis.plotBarChart("Cryst1_ważność", xTicksValid, valuesValid)
     else:
        print("Sizes do not match!")

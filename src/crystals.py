@@ -8,12 +8,12 @@ def checkForMaximum(spectraDict, foundSignalShift):
     spectraShifts = list(spectraDict.keys())
     shiftIndex = spectraShifts.index(foundSignalShift)
     realShift = spectraShifts.index(foundSignalShift)
-    for i in range(5):
+    for i in range(10):
         if spectraDict[spectraShifts[shiftIndex - i]] > maxInt:
           maxInt = spectraDict[spectraShifts[shiftIndex - i]]
           realShift = spectraShifts[shiftIndex - i]
     
-    for i in range(5):
+    for i in range(10):
         if spectraDict[spectraShifts[shiftIndex + i]] > maxInt:
           maxInt = spectraDict[spectraShifts[shiftIndex - i]]
           realShift = spectraShifts[shiftIndex - i]
@@ -69,7 +69,7 @@ def calculateCryst1(path, outputFileName):
     spectraData = getDataFromFile(path)
     ramanInt = np.array([], dtype='float')
     ramanInt = np.append(ramanInt, searchForSignalIntensity(spectraData, 'CH2_str_sym'))
-    ramanInt = np.append(ramanInt, searchForSignalIntensity(spectraData, 'CH2_str_asym'))
+    ramanInt = np.append(ramanInt, searchForSignalIntensity(spectraData, 'CH3_str_asym'))
     cryst1 = np.append(cryst1, ramanInt[1] / ramanInt[3])
     
     writeToFile(outputFileName + ".csv", cryst1)
@@ -113,6 +113,7 @@ def calculateCryst4(path, outputFileName):
 def calculateSingleCryst(path, fileNamesList, choice):
     fileName = input("File Name for cryst{0}: ".format(choice))
     for file in fileNamesList:
+        #print("File : " + file + " PROCESSING")
         match choice:
             case 1:
                 calculateCryst1(path + file, fileName)
@@ -160,7 +161,7 @@ def getIntensityList(spectraData):
     match choice:
         case 1:
             intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CH2_str_sym'))
-            intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CH2_str_asym'))
+            intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CH3_str_asym'))
         case 2:
             intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CH2_ben_cryst'))
             intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CH2_ben_amorf'))

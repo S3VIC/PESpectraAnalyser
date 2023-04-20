@@ -2,7 +2,15 @@ import matplotlib.pyplot as plt
 import matplotlib as mlt
 import numpy as np
 import src.interface as inter
-# mlt.use('SVG')
+
+def plotRawCorrectedSpectra(fileName, shifts, x, z):
+    mlt.use("SVG")
+    plt.plot(shifts, x - z)
+    plt.plot(shifts, z)
+    plt.plot(shifts, x)
+    plt.savefig(fileName)
+    plt.close()
+
 
 def getCrystalData(filePath):
   mlt.use('SVG')

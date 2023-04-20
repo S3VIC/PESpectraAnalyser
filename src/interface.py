@@ -1,10 +1,10 @@
 import params.parameters as par
-import src.model as mod
+import src.crystals as cr
 import sys
 import os
 import src.visualiser as vis
 import src.statisticalAnalysis as stat
-import src.bgcorrection as bg
+import src.bg_algorithms as bg
 
 
 def mainMenu():
@@ -37,6 +37,12 @@ def modellingOptions():
     modellingActions()
 
 
+def bgCorrectionOptions():
+    for prompt in par.BGCORRECTION_OPTIONS:
+        print(prompt)
+    bgCorrectionActions()
+
+
 def initialActionChoice():
     number = int(input(par.SELECT_PROMPT))
     match number:
@@ -47,11 +53,7 @@ def initialActionChoice():
         case 3:
             modellingOptions()
         case 4:
-            pathToFiles="data/input/raw/"
-            pathToOutputFiles="data/output/"
-            #bg.correctmcaLS(pathToFile)
-            #bg.correctAsLS(pathToFile)
-            bg.arLS(pathToFiles, pathToOutputFiles)
+            bgCorrectionOptions()
         case 5:
             exit()
         case other:
@@ -99,7 +101,7 @@ def modellingActions():
     match action:
         case 1:
             path = input("Path to .CSV files: ")
-            mod.calculateCrysts(path)
+            cr.calculateCrysts(path)
         case 2:
             assert False, par.notImplemented
         case 3:
@@ -111,14 +113,35 @@ def modellingActions():
             assert False, "Wrong option"
 
 
+def bgCorrectionActions():
+    action = int(input(par.SELECT_PROMPT))
+    match action:
+        case 1:
+            bg.setParams(1)
+#            pathToInputFiles = input("Path to .CSV files: ")
+#            pathToOutputFiles = input("Path to output files: ")
+#            bg.correctAsLS(pathToInputFiles, pathToOutputFiles)
+        case 2:
+            bg.setParams(2)
+           # pathToInputFiles = input("Path to .CSV files: ")
+           # pathToOutputFiles = input("Path to output files: ")
+           # bg.arLS(pathToInputFiles, pathToOutputFiles)
+        case 3:
+            pathToFile = input("(TESTING ALGORITHM VERSION) Path to file:") 
+            bg.correctmcaLS(pathToFile)
+        #case 4:
+            #bg.setParams()
+        case other:
+            assert False, "Wrong option"
+
 
 def getFilenameList(path):
     fileList = []
     for filename in os.listdir(path):
         if filename[-3:].upper() == par.FILENAME_EXTENSION:
             temp_file = os.path.join(path, filename)
-        if os.path.isfile(temp_file):
-            fileList.append(filename)
+            if os.path.isfile(temp_file):
+                fileList.append(filename)
     return fileList
 
 def displayCrystParamsInfo():
