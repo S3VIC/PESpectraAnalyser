@@ -3,6 +3,7 @@ import matplotlib as mlt
 import numpy as np
 import src.interface as inter
 
+
 def plotRawCorrectedSpectra(fileName, shifts, x, z):
     mlt.use("SVG")
     plt.plot(shifts, x - z)
@@ -10,6 +11,7 @@ def plotRawCorrectedSpectra(fileName, shifts, x, z):
     plt.plot(shifts, x)
     plt.savefig(fileName)
     plt.close()
+
 
 
 def getCrystalData(filePath):
@@ -27,46 +29,6 @@ def getCrystalData(filePath):
   plt.savefig('cryst_1_raw_n2.svg')
   plt.close()
 
-def barCharts():
-    path = input("Directory path: ")
-    fileList = inter.getFilenameList(path)
-    data = [] 
-    for fileName in fileList:
-        file = open(path + fileName, "r")
-        data = np.loadtxt(file)
-        file.close()
-        minData = min(data)
-        maxData = max(data)
-        if(abs(minData) > abs(maxData)):
-            maxRange = minData
-        else:
-            maxRange = maxData
-        ranges = []
-        rangesNum = 4
-        differences = abs(maxRange) / rangesNum
-        for i in range(0,rangesNum):
-            ranges.append([i*differences, (i+1) * differences])
-        bars = []
-        for i in range(rangesNum):
-            bars.append([])
-
-        for record in data:
-            for i in range(len(ranges)):
-                if((abs(record) > ranges[i][0]) and (abs(record) <= ranges[i][1])):
-                    bars[i].append(abs(record))
-                else:
-                    continue
-        barCounts = []
-        for bar in bars:
-            barCounts.append(len(bar))
-        rangesStrings = []
-        for diff in ranges:
-            rangesStrings.append("{:.2f}".format(diff[0]) + " - " + str("{:.2f}".format(diff[1])))
-        print(barCounts)
-        plt.figure()
-        plt.bar(rangesStrings, barCounts)
-        plt.savefig(fileName + "_barChart.png")
-        plt.close()
 
       
 def plotBarChart(title, xTicks, counts):
@@ -76,4 +38,22 @@ def plotBarChart(title, xTicks, counts):
     plt.bar(xTicks, counts)
     plt.savefig(title + ".png")
     plt.close()
-    
+
+
+
+def plotPartialSpectra(spectra, path, fileName):
+    mlt.use("Cairo")
+    fig, ax = plt.subplots()
+    ax.set_ylabel("Intensity [arb. units]")
+    ax.set(yticklabels = []) # removing ytick labels 
+    ax.set_xlabel("Raman shift [cm$^{-1}]$")
+    plt.plot(spectra[0], spectra[1])
+    #plt.xlim([40, 3420]) #limitting xaxis range
+    plt.gca().invert_xaxis() # inverting xaxis
+    plt.savefig(path + fileName + ".png", dpi = 400)
+    plt.close()
+
+
+def plotCrystScatter(path1, path2, path3, path4):
+    print("Nothing")
+

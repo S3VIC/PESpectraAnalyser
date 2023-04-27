@@ -5,6 +5,7 @@ import os
 import src.visualiser as vis
 import src.statisticalAnalysis as stat
 import src.bg_algorithms as bg
+import numpy as np
 
 
 def mainMenu():
@@ -13,10 +14,12 @@ def mainMenu():
     displayOptions()
 
 
+
 def displayOptions():
     for prompt in par.INITIAL_PROMPTS:
         print(prompt)
     initialActionChoice()
+
 
 
 def plottingOptions():
@@ -25,16 +28,19 @@ def plottingOptions():
     plottingActions()
 
 
+
 def statisticalAnalysisOptions():
     for prompt in par.STATISTICAL_ANALYSIS_OPTIONS:
         print(prompt)
     statisticalAnalysisActions()
 
 
+
 def modellingOptions():
     for prompt in par.MODELLING_OPTIONS:
         print(prompt)
     modellingActions()
+
 
 
 def bgCorrectionOptions():
@@ -55,6 +61,12 @@ def initialActionChoice():
         case 4:
             bgCorrectionOptions()
         case 5:
+            path = input("Path: ")
+            cr.getPeaks(path, 10)
+        case 6:
+            path = input("Path: ")
+            cr.plotCrysts(path)
+        case 7:
             exit()
         case other:
             assert False, "nope"
@@ -135,14 +147,19 @@ def bgCorrectionActions():
             assert False, "Wrong option"
 
 
+
 def getFilenameList(path):
-    fileList = []
+    fileList = np.array([])
     for filename in os.listdir(path):
         if filename[-3:].upper() == par.FILENAME_EXTENSION:
             temp_file = os.path.join(path, filename)
             if os.path.isfile(temp_file):
-                fileList.append(filename)
+                fileList = np.append(fileList, filename)
+    
+    fileList = np.sort(fileList)
     return fileList
+
+
 
 def displayCrystParamsInfo():
     print(par.cryst1Prompt)
@@ -151,3 +168,5 @@ def displayCrystParamsInfo():
     print(par.cryst4Prompt)
     print(par.crystPrompt)
     
+def logStatus(maxNum, counter, fileName):
+    print(fileName + " " + str(counter) + " out of " + str(maxNum) + " [DONE]") 

@@ -55,8 +55,8 @@ FILENAME_RAW_MODEL = "rawCryst.csv"
 
 # model params
 SIGNAL_SHIFTS = {
-    'CH2_str_sym' : 2848,
     'CH3_str_asym' : 2882,
+    'CH2_str_sym' : 2848,
     'CH2_ben_amorf' : 1440,
     'CH2_ben_cryst' : 1416,
     'CH2_twist_amorf' : 1303,
