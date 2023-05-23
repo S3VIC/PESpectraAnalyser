@@ -1,15 +1,18 @@
+#python libs imports
 import scipy as sc
 import numpy as np
 import math
 import decimal
 import matplotlib.pyplot as plt
 import matplotlib as mlt
+
+#custom imports
 import src.interface as inter
 import src.visualiser as vis
-import decimal as dc
+
 # airPLS  - A
 # arPLS - B
-# alss - C
+# alss - C (to samo co aslss
 # SNIP - S
 
 def importData(pathToFile):
@@ -148,7 +151,7 @@ def setParams(algorithmNum):
     
         newSpectra = np.array([croppedSpectra[0], newSignal], dtype = 'float')
         saveSpectraToCSV(newSpectra, outputPath, fileNamePrefix + file)
-        vis.plotPartialSpectra(newSpectra, outputPath, fileNamePrefix + file[:-4])
+        vis.plotPartialSpectra(spectra, newSpectra, outputPath, fileNamePrefix + file[:-4])
         logStatus(filesNum, counter, file)
         counter = counter + 1
 

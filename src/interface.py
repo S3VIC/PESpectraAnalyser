@@ -3,8 +3,8 @@ import src.crystals as cr
 import sys
 import os
 import src.visualiser as vis
-import src.statisticalAnalysis as stat
-import src.bg_algorithms as bg
+import src.stats as stat
+import src.correction as bg
 import numpy as np
 
 
@@ -67,7 +67,8 @@ def initialActionChoice():
             path = input("Path: ")
             cr.plotCrysts(path)
         case 7:
-            exit()
+            cr.createIDs()
+            #exit()
         case other:
             assert False, "nope"
 
@@ -129,20 +130,20 @@ def bgCorrectionActions():
     action = int(input(par.SELECT_PROMPT))
     match action:
         case 1:
-            bg.setParams(1)
+            cor.setParams(1)
 #            pathToInputFiles = input("Path to .CSV files: ")
 #            pathToOutputFiles = input("Path to output files: ")
-#            bg.correctAsLS(pathToInputFiles, pathToOutputFiles)
+#            cor.correctAsLS(pathToInputFiles, pathToOutputFiles)
         case 2:
-            bg.setParams(2)
+            cor.setParams(2)
            # pathToInputFiles = input("Path to .CSV files: ")
            # pathToOutputFiles = input("Path to output files: ")
-           # bg.arLS(pathToInputFiles, pathToOutputFiles)
+           # cor.arLS(pathToInputFiles, pathToOutputFiles)
         case 3:
             pathToFile = input("(TESTING ALGORITHM VERSION) Path to file:") 
-            bg.correctmcaLS(pathToFile)
+            cor.correctmcaLS(pathToFile)
         #case 4:
-            #bg.setParams()
+            #cor.setParams()
         case other:
             assert False, "Wrong option"
 

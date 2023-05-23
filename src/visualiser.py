@@ -41,13 +41,23 @@ def plotBarChart(title, xTicks, counts):
 
 
 
-def plotPartialSpectra(spectra, path, fileName):
+def plotPartialSpectra(initialSpectra, spectra, path, fileName):
     mlt.use("Cairo")
     fig, ax = plt.subplots()
     ax.set_ylabel("Intensity [arb. units]")
-    ax.set(yticklabels = []) # removing ytick labels 
+    #ax.set(yticklabels = []) # removing ytick labels 
     ax.set_xlabel("Raman shift [cm$^{-1}]$")
+    baseline = np.array([], dtype = 'float64')
+    for i in range(len(initialSpectra[0])):
+        for k in range(len(spectra[0])):
+            if(initialSpectra[0][i] == spectra[0][k]):
+                baseline = np.append(baseline, initialSpectra[1][i] - spectra[1][k])
+    
+    plt.xlim([spectra[0][0], spectra[0][-1]])
     plt.plot(spectra[0], spectra[1])
+    plt.plot(initialSpectra[0], initialSpectra[1])
+    plt.plot(spectra[0], baseline)
+    plt.legend(["corrected", "raw", "baseline"])
     #plt.xlim([40, 3420]) #limitting xaxis range
     plt.gca().invert_xaxis() # inverting xaxis
     plt.savefig(path + fileName + ".png", dpi = 400)

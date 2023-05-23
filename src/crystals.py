@@ -62,14 +62,28 @@ def calculateSimpleCryst(signal1, signal2, outputFileName):
     cryst1 = signal1 / signal2
     writeCrystToFile(outputFileName + ".csv", cryst1)
 
+def createIDs():
+    pathForIDs = input("Path for renamed files: ")
+    fileNames = inter.getFilenameList(pathForIDs)
+    ids = np.array([])
+    for file in fileNames:
+        ids = np.append(ids, file[:file.find('_')])
+    print(ids)
+    return ids
+        
+
+
 def plotCrysts(path):
+    mlt.rcParams.update({'figure.autolayout': True})
     fileList = inter.getFilenameList(path)
+    #print(fileList)
+    ids = createIDs()
     mlt.use("Cairo")
     fig, ax = plt.subplots()
     ax.set_ylabel("Value")
     ax.set_xlabel("Probe ID")
-    plt.ylim([-1, 2]) #limitting yaxis range
-    ids = np.linspace(1, 16, 16)
+    plt.ylim([0, 2]) #limitting yaxis range
+    #ids = np.linspace(1, 10, 10)
     print(ids)
     for i in range(len(fileList)):
         if("cryst1" in fileList[i]):
@@ -126,7 +140,8 @@ def plotCrysts(path):
                 file = open(path + fileList[i], "r")
                 data = np.loadtxt(file)
                 plt.scatter(ids, data, c = 'green', marker = 'v')
-    plt.savefig("fig2.png", dpi = 400)
+    plt.xticks(rotation=45)
+    plt.savefig("fig3.png", dpi = 400)
     plt.close()
 
 # returns dict of pairs SIGNAL_NAME : SIGNAL_SHIFT 
@@ -157,7 +172,7 @@ def getPeaks(path, promin):
     raw_List = inter.getFilenameList(pathRaw)
     asLS_List = inter.getFilenameList(pathasLS + cryst_path)
     arLS_List = inter.getFilenameList(patharLS + cryst_path)
-
+    print(raw_List)
     for i in range(len(raw_List)):
         data_raw = np.loadtxt(pathRaw + raw_List[i], delimiter=',')
         data_asLS = np.loadtxt(pathasLS + cryst_path +  asLS_List[i], delimiter=',')
@@ -204,25 +219,25 @@ def getPeaks(path, promin):
             spectraShift_arLS = peaksShifts_arLS[0]
             spectraInten_arLS = peaksIntensities_arLS[0]
 
-            for i in range(1, len(peaksShifts_raw)):
-                diff_raw = abs(peaksShifts_raw[i] - referenceShift)
+            for k in range(1, len(peaksShifts_raw)):
+                diff_raw = abs(peaksShifts_raw[k] - referenceShift)
                 refDiff_raw = abs(spectraShift_raw - referenceShift)
                 if(diff_raw <= refDiff_raw):
-                    spectraShift_raw = peaksShifts_raw[i]
-                    spectraInten_raw = peaksIntensities_raw[i]
+                    spectraShift_raw = peaksShifts_raw[k]
+                    spectraInten_raw = peaksIntensities_raw[k]
             
-            for i in range(1, len(peaksShifts_asLS)): 
-                diff_asLS = abs(peaksShifts_asLS[i] - referenceShift)
+            for k in range(1, len(peaksShifts_asLS)): 
+                diff_asLS = abs(peaksShifts_asLS[k] - referenceShift)
                 refDiff_asLS = abs(spectraShift_asLS - referenceShift)
                 if(diff_asLS <= refDiff_asLS):
-                    spectraShift_asLS = peaksShifts_asLS[i]
-                    spectraInten_asLS = peaksIntensities_asLS[i]
-            for i in range(1, len(peaksShifts_arLS)):
-                diff_arLS = abs(peaksShifts_arLS[i] - referenceShift)
+                    spectraShift_asLS = peaksShifts_asLS[k]
+                    spectraInten_asLS = peaksIntensities_asLS[k]
+            for k in range(1, len(peaksShifts_arLS)):
+                diff_arLS = abs(peaksShifts_arLS[k] - referenceShift)
                 refDiff_arLS = abs(spectraShift_arLS - referenceShift)
                 if(diff_arLS <= refDiff_arLS):
-                    spectraShift_arLS = peaksShifts_arLS[i]
-                    spectraInten_arLS = peaksIntensities_arLS[i]
+                    spectraShift_arLS = peaksShifts_arLS[k]
+                    spectraInten_arLS = peaksIntensities_arLS[k]
                     
             peak_shifts_raw[signal] = spectraShift_raw
             peak_data_raw[spectraShift_raw] = spectraInten_raw
@@ -236,7 +251,12 @@ def getPeaks(path, promin):
         peaks_raw = np.array([peak_shifts_raw, peak_data_raw])
         peaks_asLS = np.array([peak_shifts_asLS, peak_data_asLS])
         peaks_arLS = np.array([peak_shifts_arLS, peak_data_arLS])
-        #calculate crysts and save them to file
+        #if(i == 13):
+        #    print(peaks_asLS[1][peaks_asLS[0]['CH2_ben_cryst']])
+        #    print(peaks_asLS[1][peaks_asLS[0]['CC_str_amorf']])
+        #    print(peaks_asLS[0]['CC_str_amorf'])
+        #    print(asLS_List[i])
+       #calculate crysts and save them to file
         #c1
         calculateSimpleCryst(peaks_raw[1][peaks_raw[0]['CH2_str_sym']], peaks_raw[1][peaks_raw[0]['CH3_str_asym']], "cryst1_raw")
         calculateSimpleCryst(peaks_asLS[1][peaks_asLS[0]['CH2_str_sym']], peaks_asLS[1][peaks_asLS[0]['CH3_str_asym']], "cryst1_asLS")
@@ -297,80 +317,6 @@ def getDataFromFile(filePath):
 #        print("File : " + file + " DONE")
 
 
-def calculateAllCryst(path, fileNamesList):
-    outputFileNames = np.array([], dtype='string')
-    for i in range(4):
-        fileName = input("File name for cryst{0}: ".format(i + 1))
-        outputFileNames = np.append(outputFileNames, fileName)
-    for file in fileNamesList:
-        calculateCryst1(path + file, outputFileNames[0])
-        calculateCryst2(path + file, outputFileNames[1])
-        calculateCryst3(path + file, outputFileNames[2])
-        calculateCryst4(path + file, outputFileNames[3])
-        print("File : " + file + " DONE")
-
-
-def calculateCrysts(path):    
-    fileNamesList = inter.getFilenameList(path)
-    inter.displayCrystParamsInfo()
-    choice = int(input("Which cryst params to calculate: "))
-    match choice:
-        case 1 | 2 | 3 | 4:
-            calculateSingleCryst(path, fileNamesList, choice)
-        case 5:
-            calculateAllCryst(path, fileNamesList)
-        case other:
-            assert False, "Wrong option" 
-
-
-
-def getIntensityList(spectraData):
-    intensityList = np.array([], dtype='float')
-    choice = int(input("Which cryst params to calculate: ")) 
-    match choice:
-        case 1:
-            intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CH2_str_sym'))
-            intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CH3_str_asym'))
-        case 2:
-            intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CH2_ben_cryst'))
-            intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CH2_ben_amorf'))
-        case 3:
-            intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CH2_ben_cryst'))
-            intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CH2_twist_amorf'))
-        case 4:
-            intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CH2_ben_cryst'))
-            intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, 'CC_str_amorf'))
-        case 5:
-            signalNameList = list(par.SIGNAL_SHIFTS.keys())
-            for i in signalNameList:
-                intensityList = np.append(intensityList, searchForSignalIntensity(spectraData, i))
-        case other:
-            assert False, "Wrong option"
-
-    return intensityList
-
-
-def rawModelingWithNormalisation(path, normIntensity):
-  filelist = inter.getfilenamelist(path)
-  crystlist = np.array([], dtype='float')
-
-  for filename in filelist:
-    spectradatanorm = getdatafromfile(path + filename)
-
-    normalisationintensity = searchforsignalintensity(spectradatanorm, par.signal_shifts[normIntensity])
-
-    xcoordinates = list(spectradatanorm.keys())
-
-    for i in xcoordinates:
-      spectradatanorm[i] = spectradatanorm[i] / normalisationintensity
-
-    intensitylist = getintensitylist(spectradatanorm)
-
-    crystparams = calculatecrystparams(intensitylist)
-
-    crystlist = np.append(crystlist, crystparams)
-
-  writetofile("raw_normalised" + normIntensity + ".csv", crystlist)
 
 
 def calculateCrystParams(intensityList):
@@ -388,3 +334,9 @@ def calculateCrystParams(intensityList):
   ], dtype='float')
 
   return crystParams
+
+
+
+  # alSS
+  # arPLS
+  # airPLS
