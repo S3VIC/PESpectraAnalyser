@@ -1,13 +1,32 @@
 import numpy as np
-import params.parameters as par
 import scipy as sc
 import matplotlib.pyplot as plt
 import matplotlib as mlt
+from enum import Enum
 
 #custom imports
+import params.parameters as par
 import src.interface as inter
 import src.funcAnalysis as fan
 import src.visualiser as vis
+
+
+class Color(Enum):
+    RED = 0
+    YELLOW = 1
+    BLUE = 2
+    GREEN = 3
+
+
+class Markers(Enum):
+    CROSS = 0
+    SQUARE = 1
+    TRIANGLE = 2
+    DIAMOND = 3
+
+
+
+
 
 #returns array containing shift and intensity respectively of the signal searched based on the first prediction
 # old peak searching method
@@ -75,79 +94,60 @@ def createIDs():
     return ids
         
 
+def getBgType(fileName):
+    bgType = fileName[fileName.index("_") + 1 : -4]
+    match bgType:
+        case "raw":
+            return Markers.CROSS
+        case "asLS":
+            return Markers.SQUARE
+        case "arLS":
+            return Markers.TRIANGLE
+        case "at":
+            return Markers.DIAMOND
+        case other:
+            assert False, "Error, bgType not recognised!"
+
+
+def getCrystType(fileName):
+    crystType = int(fileName[5])
+    match crystType:
+        case 1:
+            return Color.RED
+        case 2:
+            return Color.YELLOW
+        case 3:
+            return Color.BLUE
+        case 4:
+            return Color.GREEN 
+        case other:
+            assert False, "Error, index out of enum range!"
+
 
 def plotCrysts(path):
     mlt.rcParams.update({'figure.autolayout': True})
-    fileList = inter.getFilenameList(path)
-    #print(fileList)
-    ids = createIDs()
     mlt.use("Cairo")
+    fileList = inter.getFilenameList(path)
+    ids = createIDs()
     fig, ax = plt.subplots()
     ax.set_ylabel("Value")
     ax.set_xlabel("Probe ID")
-    plt.ylim([0, 2]) #limitting yaxis range
-    #ids = np.linspace(1, 10, 10)
-    #print(ids)
-    for i in range(len(fileList)):
-        if("cryst1" in fileList[i]):
-            if("raw" in fileList[i]):
-                file = open(path + fileList[i], "r")
-                data = np.loadtxt(file)
-                plt.scatter(ids, data, c = 'red', marker = 'X')
-            if("asLS" in fileList[i]):
-                file = open(path + fileList[i], "r")
-                data = np.loadtxt(file)
-                plt.scatter(ids, data, c = 'red', marker = 's')
-            if("arLS" in fileList[i]):
-                file = open(path + fileList[i], "r")
-                data = np.loadtxt(file)
-                print("data: " + str(len(ids)))
-                plt.scatter(ids, data, c = 'red', marker = 'v')
+    plt.ylim([0, 2.2])
 
-        if("cryst2" in fileList[i]):
-            if("raw" in fileList[i]):
-                file = open(path + fileList[i], "r")
-                data = np.loadtxt(file)
-                plt.scatter(ids, data, c = 'yellow', marker = 'X')
-            if("asLS" in fileList[i]):
-                file = open(path + fileList[i], "r")
-                data = np.loadtxt(file)
-                plt.scatter(ids, data, c = 'yellow', marker = 's')
-            if("arLS" in fileList[i]):
-                file = open(path + fileList[i], "r")
-                data = np.loadtxt(file)
-                plt.scatter(ids, data, c = 'yellow', marker = 'v')
-        if("cryst3" in fileList[i]):
-            if("raw" in fileList[i]):
-                file = open(path + fileList[i], "r")
-                data = np.loadtxt(file)
-                plt.scatter(ids, data, c = 'blue', marker = 'X')
-            if("asLS" in fileList[i]):
-                file = open(path + fileList[i], "r")
-                data = np.loadtxt(file)
-                plt.scatter(ids, data, c = 'blue', marker = 's')
-            if("arLS" in fileList[i]):
-                file = open(path + fileList[i], "r")
-                data = np.loadtxt(file)
-                plt.scatter(ids, data, c = 'blue', marker = 'v')
-        if("cryst4" in fileList[i]):
-            if("raw" in fileList[i]):
-                file = open(path + fileList[i], "r")
-                data = np.loadtxt(file)
-                plt.scatter(ids, data, c = 'green', marker = 'X')
-            if("asLS" in fileList[i]):
-                file = open(path + fileList[i], "r")
-                data = np.loadtxt(file)
-                plt.scatter(ids, data, c = 'green', marker = 's')
-            if("arLS" in fileList[i]):
-                file = open(path + fileList[i], "r")
-                data = np.loadtxt(file)
-                plt.scatter(ids, data, c = 'green', marker = 'v')
+    for fileName in fileList:
+        marker = getBgType(fileName)
+        color = getCrystType(fileName)
+        file = open(path + fileName, "r")
+        data = np.loadtxt(file)
+        plt.scatter(ids, data, c = par.colors[color.value], marker = par.markers[marker.value])
+        file.close()
+
     plt.xticks(rotation=45)
-    plt.savefig("fig3.png", dpi = 400)
+    plt.savefig("test2.png", dpi = 400)
     plt.close()
 
-# returns dict of pairs SIGNAL_NAME : SIGNAL_SHIFT 
+
+#Calculates crystals based on given signals (cryst type) and type of bg correction that was applied on spectra
 def getPeaks(path, promin, signalType, addPath, crystNum, signals):
     fullPath = path + signalType + addPath
     

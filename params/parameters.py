@@ -1,3 +1,4 @@
+
 # interface params
 WELCOME_MESSAGE = "WELCOME TO PE-SPECTRA ANALYSER"
 CHOOSE_MESSAGE = "Choose an option:"
@@ -73,3 +74,11 @@ crystPrompt = "5) Calculate all cryst params"
 
 # plotting parameters
 notImplemented = "Not implemented yet"
+
+
+
+#colors for scatter plotting
+colors = ['red', 'yellow', 'blue', 'green']
+markers = ['X', 's', 'v', 'd']
+
+
