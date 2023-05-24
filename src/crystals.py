@@ -1,10 +1,13 @@
 import numpy as np
 import params.parameters as par
-import src.interface as inter
 import scipy as sc
 import matplotlib.pyplot as plt
 import matplotlib as mlt
 
+#custom imports
+import src.interface as inter
+import src.funcAnalysis as fan
+import src.visualiser as vis
 
 #returns array containing shift and intensity respectively of the signal searched based on the first prediction
 # old peak searching method
@@ -84,7 +87,7 @@ def plotCrysts(path):
     ax.set_xlabel("Probe ID")
     plt.ylim([0, 2]) #limitting yaxis range
     #ids = np.linspace(1, 10, 10)
-    print(ids)
+    #print(ids)
     for i in range(len(fileList)):
         if("cryst1" in fileList[i]):
             if("raw" in fileList[i]):
@@ -145,134 +148,40 @@ def plotCrysts(path):
     plt.close()
 
 # returns dict of pairs SIGNAL_NAME : SIGNAL_SHIFT 
-def getPeaks(path, promin):
-    cryst1_raw = np.array([], dtype = 'float')
-    cryst2_raw = np.array([], dtype = 'float')
-    cryst3_raw = np.array([], dtype = 'float')
-    cryst4_raw = np.array([], dtype = 'float')
-
-
-    cryst1_asLS = np.array([], dtype = 'float')
-    cryst2_asLS= np.array([], dtype = 'float')
-    cryst3_asLS = np.array([], dtype = 'float')
-    cryst4_asLS = np.array([], dtype = 'float')
-
-
-    cryst1_arLS = np.array([], dtype = 'float')
-    cryst2_arLS = np.array([], dtype = 'float')
-    cryst3_arLS = np.array([], dtype = 'float')
-    cryst4_arLS = np.array([], dtype = 'float')
+def getPeaks(path, promin, signalType, addPath, crystNum, signals):
+    fullPath = path + signalType + addPath
     
-    pathRaw = path + "raw/"
-    pathasLS = path + "asLS/"
-    patharLS = path + "arLS/"
+    fileNamesList = inter.getFilenameList(fullPath)
+    for i in range(len(fileNamesList)):
+        data = np.loadtxt(fullPath + fileNamesList[i], delimiter = ',')
+        intensities = np.array(data[:, 1], dtype ='float')
+        ramanshifts = np.array(data[:, 0], dtype ='float')
 
-    #cryst_path = "ben-twist-str/"
-    cryst_path = "str_CH2/"
-    raw_List = inter.getFilenameList(pathRaw)
-    asLS_List = inter.getFilenameList(pathasLS + cryst_path)
-    arLS_List = inter.getFilenameList(patharLS + cryst_path)
-    print(raw_List)
-    for i in range(len(raw_List)):
-        data_raw = np.loadtxt(pathRaw + raw_List[i], delimiter=',')
-        data_asLS = np.loadtxt(pathasLS + cryst_path +  asLS_List[i], delimiter=',')
-        data_arLS = np.loadtxt(patharLS + cryst_path +  arLS_List[i], delimiter=',')
-
-        intensities_raw = np.array(data_raw[:, 1], dtype ='float')
-        ramanshifts_raw = np.array(data_raw[:, 0], dtype ='float')
-         
-        intensities_asLS = np.array(data_asLS[:, 1], dtype ='float')
-        ramanshifts_asLS= np.array(data_asLS[:, 0], dtype ='float')
-        intensities_arLS = np.array(data_arLS[:, 1], dtype ='float')
-        ramanshifts_arLS = np.array(data_arLS[:, 0], dtype ='float')
-
-        peaksIndexes_raw = sc.signal.find_peaks(intensities_raw, prominence = promin)
-        peaksShifts_raw = np.array(ramanshifts_raw[peaksIndexes_raw[0]], dtype = 'float')
-        peaksIntensities_raw = np.array(intensities_raw[peaksIndexes_raw[0]], dtype = 'float')
+        peaksIndexes = sc.signal.find_peaks(intensities, prominence = promin)
+        peaksShifts = np.array(ramanshifts[peaksIndexes[0]], dtype = 'float')
+#        print(peaksShifts)
+        peaksIntensities = np.array(intensities[peaksIndexes[0]], dtype = 'float')
+        peakShifts = {}
+        peakData = {}
         
-        peaksIndexes_asLS = sc.signal.find_peaks(intensities_asLS, prominence = promin)
-        peaksShifts_asLS = np.array(ramanshifts_asLS[peaksIndexes_asLS[0]], dtype = 'float')
-        peaksIntensities_asLS = np.array(intensities_asLS[peaksIndexes_asLS[0]], dtype = 'float')
-        
-        #print(peaksShifts_raw)   
-        peaksIndexes_arLS = sc.signal.find_peaks(intensities_arLS, prominence = promin)
-        peaksShifts_arLS = np.array(ramanshifts_arLS[peaksIndexes_arLS[0]], dtype = 'float')
-        peaksIntensities_arLS = np.array(intensities_arLS[peaksIndexes_arLS[0]], dtype = 'float')
-       
-        signalNames = np.array(list(par.SIGNAL_SHIFTS.keys()))
-        
-        peak_shifts_raw = {}
-        peak_data_raw = {}
-
-        peak_shifts_asLS = {}
-        peak_data_asLS = {}
-        
-        peak_shifts_arLS = {}
-        peak_data_arLS = {}
-
-        for signal in signalNames:
+        for signal in signals:
             referenceShift = par.SIGNAL_SHIFTS[signal]
-            spectraShift_raw = peaksShifts_raw[0]
-            spectraInten_raw = peaksIntensities_raw[0]
-            spectraShift_asLS = peaksShifts_asLS[0]
-            spectraInten_asLS = peaksIntensities_asLS[0]
-            spectraShift_arLS = peaksShifts_arLS[0]
-            spectraInten_arLS = peaksIntensities_arLS[0]
+            spectraShift = peaksShifts[0]
+            spectraIntensities = peaksIntensities[0]
 
-            for k in range(1, len(peaksShifts_raw)):
-                diff_raw = abs(peaksShifts_raw[k] - referenceShift)
-                refDiff_raw = abs(spectraShift_raw - referenceShift)
-                if(diff_raw <= refDiff_raw):
-                    spectraShift_raw = peaksShifts_raw[k]
-                    spectraInten_raw = peaksIntensities_raw[k]
-            
-            for k in range(1, len(peaksShifts_asLS)): 
-                diff_asLS = abs(peaksShifts_asLS[k] - referenceShift)
-                refDiff_asLS = abs(spectraShift_asLS - referenceShift)
-                if(diff_asLS <= refDiff_asLS):
-                    spectraShift_asLS = peaksShifts_asLS[k]
-                    spectraInten_asLS = peaksIntensities_asLS[k]
-            for k in range(1, len(peaksShifts_arLS)):
-                diff_arLS = abs(peaksShifts_arLS[k] - referenceShift)
-                refDiff_arLS = abs(spectraShift_arLS - referenceShift)
-                if(diff_arLS <= refDiff_arLS):
-                    spectraShift_arLS = peaksShifts_arLS[k]
-                    spectraInten_arLS = peaksIntensities_arLS[k]
-                    
-            peak_shifts_raw[signal] = spectraShift_raw
-            peak_data_raw[spectraShift_raw] = spectraInten_raw
-            
-            peak_shifts_asLS[signal] = spectraShift_asLS
-            peak_data_asLS[spectraShift_asLS] = spectraInten_asLS
-           
-            peak_shifts_arLS[signal] = spectraShift_arLS
-            peak_data_arLS[spectraShift_arLS] = spectraInten_arLS
+            for j in range(1, len(peaksShifts)):
+                diff = abs(peaksShifts[j] - referenceShift)
+                refDiff = abs(spectraShift - referenceShift)
+                if(diff <= refDiff):
+                    spectraShift = peaksShifts[j]
+                    spectraInten = peaksIntensities[j]
+    
+            peakShifts[signal] = spectraShift
+            peakData[spectraShift] = spectraInten
 
-        peaks_raw = np.array([peak_shifts_raw, peak_data_raw])
-        peaks_asLS = np.array([peak_shifts_asLS, peak_data_asLS])
-        peaks_arLS = np.array([peak_shifts_arLS, peak_data_arLS])
-        #if(i == 13):
-        #    print(peaks_asLS[1][peaks_asLS[0]['CH2_ben_cryst']])
-        #    print(peaks_asLS[1][peaks_asLS[0]['CC_str_amorf']])
-        #    print(peaks_asLS[0]['CC_str_amorf'])
-        #    print(asLS_List[i])
-       #calculate crysts and save them to file
-        #c1
-        calculateSimpleCryst(peaks_raw[1][peaks_raw[0]['CH2_str_sym']], peaks_raw[1][peaks_raw[0]['CH3_str_asym']], "cryst1_raw")
-        calculateSimpleCryst(peaks_asLS[1][peaks_asLS[0]['CH2_str_sym']], peaks_asLS[1][peaks_asLS[0]['CH3_str_asym']], "cryst1_asLS")
-        calculateSimpleCryst(peaks_arLS[1][peaks_arLS[0]['CH2_str_sym']], peaks_arLS[1][peaks_arLS[0]['CH3_str_asym']], "cryst1_arLS")
-       # ##c2
-       # calculateSimpleCryst(peaks_raw[1][peaks_raw[0]['CH2_ben_cryst']], peaks_raw[1][peaks_raw[0]['CH2_ben_amorf']], "cryst2_raw")
-       # calculateSimpleCryst(peaks_asLS[1][peaks_asLS[0]['CH2_ben_cryst']], peaks_asLS[1][peaks_asLS[0]['CH2_ben_amorf']], "cryst2_asLS")
-       # calculateSimpleCryst(peaks_arLS[1][peaks_arLS[0]['CH2_ben_cryst']], peaks_arLS[1][peaks_arLS[0]['CH2_ben_amorf']], "cryst2_arLS")
-       ####c3
-       # calculateSimpleCryst(peaks_raw[1][peaks_raw[0]['CH2_ben_cryst']], peaks_raw[1][peaks_raw[0]['CH2_twist_amorf']], "cryst3_raw")
-       # calculateSimpleCryst(peaks_asLS[1][peaks_asLS[0]['CH2_ben_cryst']], peaks_asLS[1][peaks_asLS[0]['CH2_twist_amorf']], "cryst3_asLS")
-       # calculateSimpleCryst(peaks_arLS[1][peaks_arLS[0]['CH2_ben_cryst']], peaks_arLS[1][peaks_arLS[0]['CH2_twist_amorf']], "cryst3_arLS")
-       # ###c4
-       # calculateSimpleCryst(peaks_raw[1][peaks_raw[0]['CH2_ben_cryst']], peaks_raw[1][peaks_raw[0]['CC_str_amorf']], "cryst4_raw")
-       # calculateSimpleCryst(peaks_asLS[1][peaks_asLS[0]['CH2_ben_cryst']], peaks_asLS[1][peaks_asLS[0]['CC_str_amorf']], "cryst4_asLS")
-       # calculateSimpleCryst(peaks_arLS[1][peaks_arLS[0]['CH2_ben_cryst']], peaks_arLS[1][peaks_arLS[0]['CC_str_amorf']], "cryst4_arLS")
+        #print(peakShifts)
+        peaks = np.array([peakShifts, peakData])
+        calculateSimpleCryst(peaks[1][peaks[0][signals[0]]], peaks[1][peaks[0][signals[1]]], "cryst" + str(crystNum) + "_" + signalType[:-1])
 
 
 #saves data to file from an array
@@ -281,7 +190,62 @@ def writeCrystToFile(filename, crystValue):
     file.write(str(crystValue) + "\n")
     file.close()
 
+def integratePeaks(path, promin, peak1Name, peak2Name):
 
+    fileList = inter.getFilenameList(path)
+    for fileName in fileList:
+        file = open(path + fileName, 'r')
+
+        data = np.loadtxt(file, delimiter = ',')
+        x = data[:, 0]
+        y = data[:, 1]
+        file.close()
+        peakIndex = sc.signal.find_peaks(y, prominence = promin)
+        peakShifts = np.array(x[peakIndex[0]], dtype = 'float')
+        peakInten = np.array(y[peakIndex[0]], dtype = 'float')
+        referenceShift1 = par.SIGNAL_SHIFTS[peak1Name]
+        referenceShift2 = par.SIGNAL_SHIFTS[peak2Name]
+
+        shift1 = peakShifts[0]
+        shift2 = peakShifts[0]
+        inten1 = peakInten[0]
+        inten2 = peakInten[0]
+
+        for i in range(1, len(peakShifts)):
+            diff_raw1 = abs(peakShifts[i] - referenceShift1)
+            refDiff1 = abs(shift1 - referenceShift1)
+            if(diff_raw1 <= refDiff1):
+                shift1 = peakShifts[i]
+                inten1 = peakInten[i]
+
+            diff_raw2 = abs(peakShifts[i] - referenceShift2)
+            refDiff2 = abs(shift2 - referenceShift2)
+            if(diff_raw2 <= refDiff2):
+                shift2 = peakShifts[i]
+                inten2 = peakInten[i]
+
+        indexOfPeak1 = np.where( x == shift1 ) 
+        indexOfPeak2 = np.where( x == shift2 )
+        index1 = int(indexOfPeak1[0]) 
+        index2 = int(indexOfPeak2[0])
+        offset = 30
+
+        area1 = fan.rectIntegLeft(x[index1 - offset : index1 + offset], y[index1 - offset : index1 + offset])
+        area2 = fan.rectIntegLeft(x[index2 - offset : index2 + offset], y[index2 - offset : index2 + offset])
+        
+        cryst = area1 / area2
+        writeCrystToFile("cryst4_raw_intRectLeft.CSV", cryst)
+
+        area3 = fan.rectIntegRight(x[index1 - offset : index1 + offset], y[index1 - offset : index1 + offset])
+        area4 = fan.rectIntegRight(x[index2 - offset : index2 + offset], y[index2 - offset : index2 + offset])
+        cryst = area3 / area4
+        writeCrystToFile("cryst4_raw_intRectRight.CSV", cryst)
+
+        area5 = fan.trapInteg(x[index1 - offset : index1 + offset], y[index1 - offset : index1 + offset])
+        area6 = fan.trapInteg(x[index2 - offset : index2 + offset], y[index2 - offset : index2 + offset])
+        cryst = area5 / area6
+        writeCrystToFile("cryst4_raw_intTrap.CSV", cryst)
+        print(fileName + " finished")
 
 
 #reads data from file and returns it in form of dictionary {RAMAN SHIFT : INTENSITY} 

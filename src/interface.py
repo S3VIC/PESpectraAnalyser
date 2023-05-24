@@ -1,74 +1,44 @@
-import params.parameters as par
-import src.crystals as cr
+#python imports
 import sys
 import os
+import numpy as np
+
+#custom imports
+import src.prompts as pr
+import params.parameters as par
+import src.crystals as cr
 import src.visualiser as vis
 import src.stats as stat
-import src.correction as bg
-import numpy as np
+import src.correction as cor
 
 
 def mainMenu():
     print(par.WELCOME_MESSAGE)
     print(par.CHOOSE_MESSAGE)
-    displayOptions()
-
-
-
-def displayOptions():
-    for prompt in par.INITIAL_PROMPTS:
-        print(prompt)
+    pr.displayOptions(par.INITIAL_PROMPTS)
     initialActionChoice()
-
-
-
-def plottingOptions():
-    for prompt in par.PLOTTING_OPTIONS:
-        print(prompt)
-    plottingActions()
-
-
-
-def statisticalAnalysisOptions():
-    for prompt in par.STATISTICAL_ANALYSIS_OPTIONS:
-        print(prompt)
-    statisticalAnalysisActions()
-
-
-
-def modellingOptions():
-    for prompt in par.MODELLING_OPTIONS:
-        print(prompt)
-    modellingActions()
-
-
-
-def bgCorrectionOptions():
-    for prompt in par.BGCORRECTION_OPTIONS:
-        print(prompt)
-    bgCorrectionActions()
 
 
 def initialActionChoice():
     number = int(input(par.SELECT_PROMPT))
     match number:
         case 1:
-            plottingOptions()
+            pr.displayOptions(par.BGCORRECTION_OPTIONS)
+
         case 2:
-            statisticalAnalysisOptions()
+            pr.displayOptions(par.CRYST_CALCULATION)
+            crystCalculationActions()
         case 3:
-            modellingOptions()
+            pr.displayOptions(par.PLOTTING_OPTIONS)
+            plottingActions()
         case 4:
-            bgCorrectionOptions()
+            exit()
         case 5:
             path = input("Path: ")
-            cr.getPeaks(path, 10)
-        case 6:
-            path = input("Path: ")
-            cr.plotCrysts(path)
-        case 7:
-            cr.createIDs()
-            #exit()
+            #cr.integratePeaks(path, 10, 'CH3_str_asym', 'CH2_str_sym')
+            #cr.integratePeaks(path, 10, 'CH2_ben_amorf', 'CH2_ben_cryst')
+            #cr.integratePeaks(path, 10, 'CH2_ben_amorf', 'CH2_twist_amorf')
+            cr.integratePeaks(path, 10, 'CH2_ben_amorf', 'CC_str_amorf')
         case other:
             assert False, "nope"
 
@@ -77,44 +47,38 @@ def plottingActions():
     action = int(input(par.SELECT_PROMPT))
     match action:
         case 1:
-            plottingOptions()
+            path = input("Path for CSV files: ")
         case 2:
             assert False, par.notImplemented
         case 3:
-            assert False, par.notImplemented
+            path = input("Path for CSV files: ")
+            cr.plotCrysts(path)
         case 4:
-            vis.barCharts()
-        case 5:
-            mainMenu()
-            
-
-def statisticalAnalysisActions():
-    action = int(input(par.SELECT_PROMPT))
-
-    match action:
-        case 1:
-            stat.checkRamanShiftDiff()
-        case 2:
-            path1 = input("Directory 1 path: ")
-            path2 = input("Directory 2 path: ")
-            pairDict = stat.checkForPairSpectras(path1, path2)
-            stat.checkRamanShiftDiffForSpectraPairs(path1, path2, pairDict)
-        case 3:
-            assert False, par.notImplemented
-        case 4: 
-            file1 = input("Path for 1st file with cryst params: ")
-            file2 = input("Path for 2nd file with cryst params: ")
-            stat.compareCrystParams(file1, file2)
-        case 5:
             mainMenu()
 
 
-def modellingActions():
+def crystCalculationActions():
     action = int(input(par.SELECT_PROMPT))
     match action:
         case 1:
             path = input("Path to .CSV files: ")
-            cr.calculateCrysts(path)
+            #cr.calculateCrysts(path)
+            cr.getPeaks(path, 2, "raw/", "", 1, ['CH2_str_sym', 'CH3_str_asym'])
+            cr.getPeaks(path, 2, "raw/", "", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
+            cr.getPeaks(path, 2, "raw/", "", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
+            cr.getPeaks(path, 2, "raw/", "", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
+            cr.getPeaks(path, 2, "asLS/", "str_CH2/", 1, ['CH2_str_sym', 'CH3_str_asym'])
+            cr.getPeaks(path, 2, "asLS/", "ben-twist-str/", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
+            cr.getPeaks(path, 2, "asLS/", "ben-twist-str/", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
+            cr.getPeaks(path, 2, "asLS/", "ben-twist-str/", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
+            cr.getPeaks(path, 2, "arLS/", "str_CH2/", 1, ['CH2_str_sym', 'CH3_str_asym'])
+            cr.getPeaks(path, 2, "arLS/", "ben-twist-str/", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
+            cr.getPeaks(path, 2, "arLS/", "ben-twist-str/", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
+            cr.getPeaks(path, 2, "arLS/", "ben-twist-str/", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
+#            cr.getPeaks(path, 2, "at/", "", 1, ['CH2_str_sym', 'CH3_str_asym'])
+#            cr.getPeaks(path, 2, "at/", "", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
+#            cr.getPeaks(path, 2, "at/", "", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
+#            cr.getPeaks(path, 2, "at/", "", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
         case 2:
             assert False, par.notImplemented
         case 3:
@@ -131,19 +95,8 @@ def bgCorrectionActions():
     match action:
         case 1:
             cor.setParams(1)
-#            pathToInputFiles = input("Path to .CSV files: ")
-#            pathToOutputFiles = input("Path to output files: ")
-#            cor.correctAsLS(pathToInputFiles, pathToOutputFiles)
         case 2:
             cor.setParams(2)
-           # pathToInputFiles = input("Path to .CSV files: ")
-           # pathToOutputFiles = input("Path to output files: ")
-           # cor.arLS(pathToInputFiles, pathToOutputFiles)
-        case 3:
-            pathToFile = input("(TESTING ALGORITHM VERSION) Path to file:") 
-            cor.correctmcaLS(pathToFile)
-        #case 4:
-            #cor.setParams()
         case other:
             assert False, "Wrong option"
 

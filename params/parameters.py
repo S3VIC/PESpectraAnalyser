@@ -9,19 +9,17 @@ MODELLING_ACTIONS = "4) Modelling options"
 #interface prompts
 SELECT_PROMPT = "Select option: "
 INITIAL_PROMPTS = [
-    "1) Plotting",
-    "2) Statistical analysis",
-    "3) Modelling",
-    "4) Background correction",
-    "5) Exit"
+    "1) Correct background",
+    "2) Calculate crystal parameters",
+    "3) Plot",
+    "4) Exit"
     ]
 
 PLOTTING_OPTIONS = [
-    "1) Raw plotting",
-    "2) Plotting with Gal peaks",
-    "3) Raw and Gal plotting",
-    "4) Bar chart",
-    "5) Maine menu",
+    "1) Plot spectras",
+    "2) Plot soectras with Gal peaks",
+    "3) Plot crystal params (scatter)",
+    "4) Main menu",
     ]
 
 STATISTICAL_ANALYSIS_OPTIONS = [
@@ -31,10 +29,10 @@ STATISTICAL_ANALYSIS_OPTIONS = [
     "4) Compare cryst params",
     "5) Main menu"
     ]
-MODELLING_OPTIONS = [
-    "1) Raw modelling (based on raw intensities)",
-    "2) Modelling bg corrected spectras",
-    "3) Search for peaks",
+CRYST_CALCULATION = [
+    "1) Based on raw intensities",
+    "2) With integration",
+    "3) With deconvolution",
     "4) Main menu",
     ]
 BGCORRECTION_OPTIONS = [

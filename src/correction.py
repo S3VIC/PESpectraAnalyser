@@ -15,6 +15,7 @@ import src.visualiser as vis
 # alss - C (to samo co aslss
 # SNIP - S
 
+
 def importData(pathToFile):
     data = np.loadtxt(pathToFile, delimiter=',')
     x = np.array(data[:, 0], dtype='float')
