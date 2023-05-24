@@ -24,7 +24,7 @@ def initialActionChoice():
     match number:
         case 1:
             pr.displayOptions(par.BGCORRECTION_OPTIONS)
-
+            bgCorrectionActions()
         case 2:
             pr.displayOptions(par.CRYST_CALCULATION)
             crystCalculationActions()
@@ -75,10 +75,10 @@ def crystCalculationActions():
             cr.getPeaks(path, 2, "arLS/", "ben-twist-str/", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
             cr.getPeaks(path, 2, "arLS/", "ben-twist-str/", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
             cr.getPeaks(path, 2, "arLS/", "ben-twist-str/", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
-#            cr.getPeaks(path, 2, "at/", "", 1, ['CH2_str_sym', 'CH3_str_asym'])
-#            cr.getPeaks(path, 2, "at/", "", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
-#            cr.getPeaks(path, 2, "at/", "", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
-#            cr.getPeaks(path, 2, "at/", "", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
+            cr.getPeaks(path, 2, "at/", "", 1, ['CH2_str_sym', 'CH3_str_asym'])
+            cr.getPeaks(path, 2, "at/", "", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
+            cr.getPeaks(path, 2, "at/", "", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
+            cr.getPeaks(path, 2, "at/", "", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
         case 2:
             assert False, par.notImplemented
         case 3:
