@@ -67,3 +67,26 @@ def plotPartialSpectra(initialSpectra, spectra, path, fileName):
 def plotCrystScatter(path1, path2, path3, path4):
     print("Nothing")
 
+
+
+def plotCrysts(path):
+    mlt.rcParams.update({'figure.autolayout': True})
+    mlt.use("Cairo")
+    fileList = inter.getFilenameList(path)
+    ids = inter.createIDs()
+    fig, ax = plt.subplots()
+    ax.set_ylabel("Value")
+    ax.set_xlabel("Probe ID")
+    plt.ylim([0, 2.2])
+
+    for fileName in fileList:
+        marker = getBgType(fileName)
+        color = getCrystType(fileName)
+        file = open(path + fileName, "r")
+        data = np.loadtxt(file)
+        plt.scatter(ids, data, c = par.colors[color.value], marker = par.markers[marker.value])
+        file.close()
+
+    plt.xticks(rotation=45)
+    plt.savefig("test2.png", dpi = 400)
+    plt.close()

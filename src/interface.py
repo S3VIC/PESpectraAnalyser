@@ -54,7 +54,7 @@ def plottingActions():
             assert False, par.notImplemented
         case 3:
             path = input("Path for CSV files: ")
-            cr.plotCrysts(path)
+            vis.plotCrysts(path)
         case 4:
             mainMenu()
 
@@ -65,22 +65,23 @@ def crystCalculationActions():
         case 1:
             path = input("Path to .CSV files: ")
             #cr.calculateCrysts(path)
-            cr.getPeaks(path, 2, "raw/", "", 1, ['CH2_str_sym', 'CH3_str_asym'])
-            cr.getPeaks(path, 2, "raw/", "", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
-            cr.getPeaks(path, 2, "raw/", "", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
-            cr.getPeaks(path, 2, "raw/", "", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
-            cr.getPeaks(path, 2, "asLS/", "str_CH2/", 1, ['CH2_str_sym', 'CH3_str_asym'])
-            cr.getPeaks(path, 2, "asLS/", "ben-twist-str/", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
-            cr.getPeaks(path, 2, "asLS/", "ben-twist-str/", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
-            cr.getPeaks(path, 2, "asLS/", "ben-twist-str/", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
-            cr.getPeaks(path, 2, "arLS/", "str_CH2/", 1, ['CH2_str_sym', 'CH3_str_asym'])
-            cr.getPeaks(path, 2, "arLS/", "ben-twist-str/", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
-            cr.getPeaks(path, 2, "arLS/", "ben-twist-str/", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
-            cr.getPeaks(path, 2, "arLS/", "ben-twist-str/", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
-            cr.getPeaks(path, 2, "at/", "", 1, ['CH2_str_sym', 'CH3_str_asym'])
-            cr.getPeaks(path, 2, "at/", "", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
-            cr.getPeaks(path, 2, "at/", "", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
-            cr.getPeaks(path, 2, "at/", "", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
+            cr.calculateCrysts(path, 2, "raw/", "", 1, ['CH2_str_sym', 'CH3_str_asym'])
+            cr.calculateCrysts(path, 2, "raw/", "", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
+            cr.calculateCrysts(path, 2, "raw/", "", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
+            cr.calculateCrysts(path, 2, "raw/", "", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
+            cr.calculateCrysts(path, 2, "asLS/", "str_CH2/", 1, ['CH2_str_sym', 'CH3_str_asym'])
+            cr.calculateCrysts(path, 2, "asLS/", "ben-twist-str/", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
+            cr.calculateCrysts(path, 2, "asLS/", "ben-twist-str/", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
+            cr.calculateCrysts(path, 2, "asLS/", "ben-twist-str/", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
+            cr.calculateCrysts(path, 2, "arLS/", "str_CH2/", 1, ['CH2_str_sym', 'CH3_str_asym'])
+            cr.calculateCrysts(path, 2, "arLS/", "ben-twist-str/", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
+            cr.calculateCrysts(path, 2, "arLS/", "ben-twist-str/", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
+            cr.calculateCrysts(path, 2, "arLS/", "ben-twist-str/", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
+            if(os.path.exists(path + "at/")):
+                cr.calculateCrysts(path, 2, "at/", "", 1, ['CH2_str_sym', 'CH3_str_asym'])
+                cr.calculateCrysts(path, 2, "at/", "", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
+                cr.calculateCrysts(path, 2, "at/", "", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
+                cr.calculateCrysts(path, 2, "at/", "", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
         case 2:
             assert False, par.notImplemented
         case 3:
@@ -126,3 +127,34 @@ def displayCrystParamsInfo():
     
 def logStatus(maxNum, counter, fileName):
     print(fileName + " " + str(counter) + " out of " + str(maxNum) + " [DONE]") 
+
+
+
+#reads data from file and returns it in form of dictionary {RAMAN SHIFT : INTENSITY} 
+def getDataFromFile(filePath):
+    dataFile = np.loadtxt(filePath, delimiter=',')
+    xCoordinates = np.array(dataFile[:, 0], dtype='float')
+    yCoordinates = np.array(dataFile[:, 1], dtype='float')
+    spectraData = {}
+
+    for i in range(xCoordinates.size):
+        spectraData[xCoordinates[i]] = yCoordinates[i]
+
+    return spectraData
+
+
+#saves data to file from an array
+def writeCrystToFile(filename, crystValue):
+    file = open(filename, "a")
+    file.write(str(crystValue) + "\n")
+    file.close()
+
+
+def createIDs():
+    pathForIDs = input("Path for renamed files: ")
+    fileNames = inter.getFilenameList(pathForIDs)
+    ids = np.array([])
+    for file in fileNames:
+        ids = np.append(ids, file[:file.find('_')])
+    print(ids)
+    return ids
