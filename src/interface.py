@@ -39,6 +39,8 @@ def initialActionChoice():
             #cr.integratePeaks(path, 10, 'CH2_ben_amorf', 'CH2_ben_cryst')
             #cr.integratePeaks(path, 10, 'CH2_ben_amorf', 'CH2_twist_amorf')
             cr.integratePeaks(path, 10, 'CH2_ben_amorf', 'CC_str_amorf')
+        case 6:
+            cr.deconvolutionTest(2, ['CH3_str_asym', 'CH2_str_sym'])
         case other:
             assert False, "nope"
 

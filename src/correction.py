@@ -12,7 +12,7 @@ import src.visualiser as vis
 
 # airPLS  - A
 # arPLS - B
-# alss - C (to samo co aslss
+# alss - C (to samo co aslss)
 # SNIP - S
 
 

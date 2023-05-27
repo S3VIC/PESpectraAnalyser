@@ -3,6 +3,7 @@ import scipy as sc
 import matplotlib.pyplot as plt
 import matplotlib as mlt
 from enum import Enum
+from scipy.optimize import curve_fit
 
 #custom imports
 import params.parameters as par
@@ -264,24 +265,6 @@ def getDataFromFile(filePath):
 #series of functions calculating particular cryst param
 
 
-#
-#def calculateSingleCryst(path, fileNamesList, choice):
-#    fileName = input("File Name for cryst{0}: ".format(choice))
-#    for file in fileNamesList:
-#        peaks = getPeaks(path + file, 140)
-#        #print("File : " + file + " PROCESSING")
-#        match choice:
-#            case 1:
-#            case 2:
-#            case 3:
-#            case 4:
-#            case other:
-#                assert False, "Wrong option"
-#        calculateSimpleCryst(signal1, signal2, fileName)
-#        print("File : " + file + " DONE")
-
-
-
 
 def calculateCrystParams(intensityList):
   cryst1 = intensityList[0] / intensityList[1]  # I1 / I2
@@ -298,6 +281,48 @@ def calculateCrystParams(intensityList):
   ], dtype='float')
 
   return crystParams
+
+
+def deconvolutionTest(promin, signals):
+    path = input("Path for CSV files: ")
+    fileList = inter.getFilenameList(path)
+    for file in fileList:
+        data = np.loadtxt(path + file, delimiter = ',')
+        X = np.array(data[:, 0], dtype = 'float')
+        Y = np.array(data[:, 1], dtype = 'float')
+
+        peaksIndexes = sc.signal.find_peaks(Y, prominence = promin)
+        peaksShifts = np.array(X[peaksIndexes[0]], dtype = 'float')
+        peaksIntensities = np.array(Y[peaksIndexes[0]], dtype = 'float')
+        peakShifts = {}
+        peakData = {}
+        
+        for signal in signals:
+            referenceShift = par.SIGNAL_SHIFTS[signal]
+            spectraShift = peaksShifts[0]
+            spectraIntensities = peaksIntensities[0]
+
+            for j in range(1, len(peaksShifts)):
+                diff = abs(peaksShifts[j] - referenceShift)
+                refDiff = abs(spectraShift - referenceShift)
+                if(diff <= refDiff):
+                    spectraShift = peaksShifts[j]
+                    spectraInten = peaksIntensities[j]
+    
+            peakShifts[signal] = spectraShift
+            peakData[spectraShift] = spectraInten
+        
+        modelShifts = np.array([peakShifts[signals[0]], peakShifts[signals[1]]], dtype = 'float')
+        popt1, pcov1 = curve_fit(fan.strCH2GaussModel, X, Y, p0 = [1, modelShifts[0], 1, 1, modelShifts[1], 1, 1, 2905, 1, 1, 2932, 1])
+        Y_model = fan.strCH2GaussModel(X, popt1[0], popt1[1], popt1[2], popt1[3], popt1[4], popt1[5], popt1[6], popt1[7], popt1[8], popt1[9], popt1[10], popt1[11])
+
+        print(popt1)
+        print(modelShifts)
+        plt.plot(X, Y)
+        plt.plot(X, Y_model)
+        
+        plt.show()
+        plt.close()
 
 
 
