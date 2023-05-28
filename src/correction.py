@@ -39,13 +39,14 @@ def cropSpectra(spectra, spectraLimits):
 
 
 def chooseSpectraLimits():
-    print("1) 2500 - 3150")
+    #OGRANICZENIE ZAKRESÓW DO TAKICH JAKIE BYŁY U LIN'A I GALL'A
+    print("1) 2700 - 3050")
     print("2) 900 - 1550")
     
     spectraRangeChoice = int(input("Choose spectra range to correct: "))
     match spectraRangeChoice:
         case 1:
-            spectraLimits = np.array([2500, 3150], dtype='int')
+            spectraLimits = np.array([2700, 3050], dtype='int')
         case 2:
             spectraLimits = np.array([900, 1650], dtype='int')
         case other:
@@ -98,7 +99,7 @@ def arLS(spectra, lamb, termPrecision):
         wt = np.zeros(spectraSize, dtype = 'float64')
         
         for i in range(spectraSize):
-            wt[i] = 1. / (1 + math.exp(2 * ( d[i] - (2 * dstdDev - dNegMean))/ dstdDev))
+            wt[i] = 1. / (1 + np.exp(2 * ( d[i] - (2 * dstdDev - dNegMean))/ dstdDev))
         
         if (np.linalg.norm(w - wt) / np.linalg.norm(w)) < termPrecision:
             break
@@ -145,7 +146,7 @@ def setParams(algorithmNum):
                 newSignal = asLS(croppedSpectra[1], 1e8, 0.10)
                 fileNamePrefix = "asLS_"
             case 2:
-                newSignal = arLS(croppedSpectra[1], 3e8, 0.32)
+                newSignal = arLS(croppedSpectra[1], 3e6, 0.10)
                 fileNamePrefix = "arLS_"
             case other:
                 assert False, "Wrong option"

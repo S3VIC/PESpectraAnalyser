@@ -59,7 +59,7 @@ SIGNAL_SHIFTS = {
     'CH2_ben_amorf' : 1440,
     'CH2_ben_cryst' : 1416,
     'CH2_twist_amorf' : 1303,
-    'CH2_twist_cryst_int' : 1295,
+#    'CH2_twist_cryst_int' : 1295,
     'CC_str_amorf' : 1080
 }
 

@@ -40,7 +40,11 @@ def initialActionChoice():
             #cr.integratePeaks(path, 10, 'CH2_ben_amorf', 'CH2_twist_amorf')
             cr.integratePeaks(path, 10, 'CH2_ben_amorf', 'CC_str_amorf')
         case 6:
-            cr.deconvolutionTest(2, ['CH3_str_asym', 'CH2_str_sym'])
+            cr.deconvolutionTest(2, ['CH2_str_sym', 'CH3_str_asym'])
+
+        case 7:
+            stat.findRSshifts()
+
         case other:
             assert False, "nope"
 
@@ -64,24 +68,24 @@ def crystCalculationActions():
     match action:
         case 1:
             path = input("Path to .CSV files: ")
-            #cr.calculateCrysts(path)
-            cr.calculateCrysts(path, 2, "raw/", "", 1, ['CH2_str_sym', 'CH3_str_asym'])
-            cr.calculateCrysts(path, 2, "raw/", "", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
-            cr.calculateCrysts(path, 2, "raw/", "", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
-            cr.calculateCrysts(path, 2, "raw/", "", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
-            cr.calculateCrysts(path, 2, "asLS/", "str_CH2/", 1, ['CH2_str_sym', 'CH3_str_asym'])
-            cr.calculateCrysts(path, 2, "asLS/", "ben-twist-str/", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
-            cr.calculateCrysts(path, 2, "asLS/", "ben-twist-str/", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
-            cr.calculateCrysts(path, 2, "asLS/", "ben-twist-str/", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
-            cr.calculateCrysts(path, 2, "arLS/", "str_CH2/", 1, ['CH2_str_sym', 'CH3_str_asym'])
-            cr.calculateCrysts(path, 2, "arLS/", "ben-twist-str/", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
-            cr.calculateCrysts(path, 2, "arLS/", "ben-twist-str/", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
-            cr.calculateCrysts(path, 2, "arLS/", "ben-twist-str/", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
+            #cr.saveRawCrysts(path)
+            cr.saveRawCrysts(path, 2, "raw/", "", 1, ['CH2_str_sym', 'CH3_str_asym'])
+            cr.saveRawCrysts(path, 2, "raw/", "", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
+            cr.saveRawCrysts(path, 2, "raw/", "", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
+            cr.saveRawCrysts(path, 2, "raw/", "", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
+            cr.saveRawCrysts(path, 2, "asLS/", "str_CH2/", 1, ['CH2_str_sym', 'CH3_str_asym'])
+            cr.saveRawCrysts(path, 2, "asLS/", "ben-twist-str/", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
+            cr.saveRawCrysts(path, 2, "asLS/", "ben-twist-str/", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
+            cr.saveRawCrysts(path, 2, "asLS/", "ben-twist-str/", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
+            cr.saveRawCrysts(path, 2, "arLS/", "str_CH2/", 1, ['CH2_str_sym', 'CH3_str_asym'])
+            cr.saveRawCrysts(path, 2, "arLS/", "ben-twist-str/", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
+            cr.saveRawCrysts(path, 2, "arLS/", "ben-twist-str/", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
+            cr.saveRawCrysts(path, 2, "arLS/", "ben-twist-str/", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
             if(os.path.exists(path + "at/")):
-                cr.calculateCrysts(path, 2, "at/", "", 1, ['CH2_str_sym', 'CH3_str_asym'])
-                cr.calculateCrysts(path, 2, "at/", "", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
-                cr.calculateCrysts(path, 2, "at/", "", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
-                cr.calculateCrysts(path, 2, "at/", "", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
+                cr.saveRawCrysts(path, 2, "at/", "", 1, ['CH2_str_sym', 'CH3_str_asym'])
+                cr.saveRawCrysts(path, 2, "at/", "", 2, ['CH2_ben_cryst', 'CH2_ben_amorf'])
+                cr.saveRawCrysts(path, 2, "at/", "", 3, ['CH2_ben_cryst', 'CH2_twist_amorf'])
+                cr.saveRawCrysts(path, 2, "at/", "", 4, ['CH2_ben_cryst', 'CC_str_amorf'])
         case 2:
             assert False, par.notImplemented
         case 3:
@@ -152,7 +156,7 @@ def writeCrystToFile(filename, crystValue):
 
 def createIDs():
     pathForIDs = input("Path for renamed files: ")
-    fileNames = inter.getFilenameList(pathForIDs)
+    fileNames = getFilenameList(pathForIDs)
     ids = np.array([])
     for file in fileNames:
         ids = np.append(ids, file[:file.find('_')])

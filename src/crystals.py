@@ -11,58 +11,9 @@ import src.interface as inter
 import src.funcAnalysis as fan
 import src.visualiser as vis
 
-
-class Color(Enum):
-    RED = 0
-    YELLOW = 1
-    BLUE = 2
-    GREEN = 3
-
-
-class Markers(Enum):
-    CROSS = 0
-    SQUARE = 1
-    TRIANGLE = 2
-    DIAMOND = 3
-
-def getBgType(fileName):
-    bgType = fileName[fileName.index("_") + 1 : -4]
-    match bgType:
-        case "raw":
-            return Markers.CROSS
-        case "asLS":
-            return Markers.SQUARE
-        case "arLS":
-            return Markers.TRIANGLE
-        case "at":
-            return Markers.DIAMOND
-        case other:
-            assert False, "Error, bgType not recognised!"
-
-
-def getCrystType(fileName):
-    crystType = int(fileName[5])
-    match crystType:
-        case 1:
-            return Color.RED
-        case 2:
-            return Color.YELLOW
-        case 3:
-            return Color.BLUE
-        case 4:
-            return Color.GREEN 
-        case other:
-            assert False, "Error, index out of enum range!"
-
 #########################################################################
-
-def calculateSimpleCryst(signal1, signal2, outputFileName):
-    cryst1 = signal1 / signal2
-    inter.writeCrystToFile(outputFileName + ".csv", cryst1)
-
-
-def findRealPeakShifts(X, peaksIndexes, signals):
-    realPeakShifts = {}
+def findSpectraPeakShifts(X, peaksIndexes, signals):
+    spectraPeakShifts = {}
     foundPeaksShifts = np.array(X[peaksIndexes], dtype = 'float')
 
     for signal in signals:
@@ -73,81 +24,65 @@ def findRealPeakShifts(X, peaksIndexes, signals):
             refDiff = abs(spectraShift - referenceShift)
             if( actualRefDiff <= refDiff ):
                 spectraShift = foundPeaksShifts[j]
-        realPeakShifts[signal] = spectraShift
+        spectraPeakShifts[signal] = spectraShift
 
-    return realPeakShifts
+    return spectraPeakShifts
 
 
-def findRealPeakIntensities(X, Y, peaks):
-    realPeakIntensities = {}
+def findSpectraPeakIntensities(X, Y, peaks):
+    spectraPeakIntensities = {}
     for peak in peaks:
         for i in range(len(X)):
             if(X[i] == peak):
-                realPeakIntensities[X[i]] = Y[i] 
+                spectraPeakIntensities[X[i]] = Y[i] 
 
-    return realPeakIntensities
+    return spectraPeakIntensities
 
 
-#Calculates crystals based on given signals (cryst type) and type of bg correction that was applied on spectra
-def calculateCrysts(path, promin, signalType, addPath, crystNum, signals):
+def calcCryst(signal1, signal2, outputFileName):
+    cryst1 = signal1 / signal2
+    inter.writeCrystToFile(outputFileName + ".csv", cryst1)
+
+
+def saveRawCrysts(path, promin, signalType, addPath, crystNum, signals):
     fullPath = path + signalType + addPath
     fileNamesList = inter.getFilenameList(fullPath)
 
     for i in range(len(fileNamesList)):
         data = np.loadtxt(fullPath + fileNamesList[i], delimiter = ',')
-        Y = np.array(data[:, 1], dtype ='float')
         X = np.array(data[:, 0], dtype ='float')
+        Y = np.array(data[:, 1], dtype ='float')
 
         foundPeakIndexes = sc.signal.find_peaks(Y, prominence = promin)[0]
         foundPeaksShifts = np.array(X[foundPeakIndexes], dtype = 'float')
-#        print(foundPeaksShifts)
         foundPeaksIntensities = np.array(Y[foundPeakIndexes], dtype = 'float')
-        signalsShifts = {}
-        signalsSpectraData = {}
-        
     
-        signalsShifts = findRealPeakShifts(X, foundPeakIndexes, signals)
-        signalsSpectraData = findRealPeakIntensities(X, Y, list(signalsShifts.values()))
+        signalsShifts = findSpectraPeakShifts(X, foundPeakIndexes, signals)
+        signalsSpectraData = findSpectraPeakIntensities(X, Y, list(signalsShifts.values()))
 
-        #print(signalsShifts)
         peaks = np.array([signalsShifts, signalsSpectraData])
-        calculateSimpleCryst(peaks[1][peaks[0][signals[0]]], peaks[1][peaks[0][signals[1]]], "cryst" + str(crystNum) + "_" + signalType[:-1])
+        
+        signal1 = peaks[1][peaks[0][signals[0]]]
+        signal2 = peaks[1][peaks[0][signals[1]]]
+        outputFileName = "cryst" + str(crystNum) + "_" + signalType[:-1]
+
+        calcCryst(signal1, signal2, outputFileName)
 
 
 
 def integratePeaks(path, promin, peak1Name, peak2Name):
-
     fileList = inter.getFilenameList(path)
     for fileName in fileList:
-        file = open(path + fileName, 'r')
-
-        data = np.loadtxt(file, delimiter = ',')
+        data = np.loadtxt(path + fileName, delimiter = ',')
         x = data[:, 0]
         y = data[:, 1]
-        file.close()
-        peakIndex = sc.signal.find_peaks(y, prominence = promin)
-        peakShifts = np.array(x[peakIndex[0]], dtype = 'float')
-        peakInten = np.array(y[peakIndex[0]], dtype = 'float')
-        referenceShift1 = par.SIGNAL_SHIFTS[peak1Name]
-        referenceShift2 = par.SIGNAL_SHIFTS[peak2Name]
+        foundPeakIndexes = sc.signal.find_peaks(y, prominence = promin)[0]
+        foundPeakShifts = np.array(x[foundPeakIndexes], dtype = 'float')
+        foundPeakIntensities = np.array(y[foundPeakIndexes], dtype = 'float')
+        refShifts = np.array([par.SIGNAL_SHIFTS[peak1Name], par.SIGNAL_SHIFTS[peak2Name]], dtype = 'float')
 
-        shift1 = peakShifts[0]
-        shift2 = peakShifts[0]
-        inten1 = peakInten[0]
-        inten2 = peakInten[0]
-
-        for i in range(1, len(peakShifts)):
-            diff_raw1 = abs(peakShifts[i] - referenceShift1)
-            refDiff1 = abs(shift1 - referenceShift1)
-            if(diff_raw1 <= refDiff1):
-                shift1 = peakShifts[i]
-                inten1 = peakInten[i]
-
-            diff_raw2 = abs(peakShifts[i] - referenceShift2)
-            refDiff2 = abs(shift2 - referenceShift2)
-            if(diff_raw2 <= refDiff2):
-                shift2 = peakShifts[i]
-                inten2 = peakInten[i]
+        signalsSpectraShifts = findSpectraPeakShifts(x, doundPeakIndexes, signals)
+        signalsSpectraIntensities = findSpectraPeakIntensities(x, y, list(signalsSpectraShifts.values()))
 
         indexOfPeak1 = np.where( x == shift1 ) 
         indexOfPeak2 = np.where( x == shift2 )
@@ -183,27 +118,48 @@ def deconvolutionTest(promin, signals):
     fileList = inter.getFilenameList(path)
     for file in fileList:
         data = np.loadtxt(path + file, delimiter = ',')
-        X = np.array(data[:, 0], dtype = 'float')
-        Y = np.array(data[:, 1], dtype = 'float')
-
+        x = np.array(data[:, 0], dtype = 'float')
+        y = np.array(data[:, 1], dtype = 'float')
+        X = np.array([], dtype = 'float')
+        Y = np.array([], dtype = 'float')
+        for i in range(len(x)):
+            if( 2750 <= x[i] <= 3000 ):
+                X = np.append(X, x[i])
+                Y = np.append(Y, y[i])
+                
         peaksIndexes = sc.signal.find_peaks(Y, prominence = promin)
         peaksShifts = np.array(X[peaksIndexes[0]], dtype = 'float')
         peaksIntensities = np.array(Y[peaksIndexes[0]], dtype = 'float')
-        #peakData = {}
         
-    
-        peakShifts = findRealPeakShifts(X, peaksIndexes[0], signals)
-#        peakData[spectraShift] = spectraInten
+        peakShifts = findSpectraPeakShifts(X, peaksIndexes[0], signals)
         
         modelShifts = np.array([peakShifts[signals[0]], peakShifts[signals[1]]], dtype = 'float')
-        popt1, pcov1 = curve_fit(fan.strCH2GaussModel, X, Y, p0 = [1, modelShifts[0], 1, 1, modelShifts[1], 1, 1, 2905, 1, 1, 2932, 1])
-        Y_model = fan.strCH2GaussModel(X, popt1[0], popt1[1], popt1[2], popt1[3], popt1[4], popt1[5], popt1[6], popt1[7], popt1[8], popt1[9], popt1[10], popt1[11])
+        boundaries1 = [ 1, modelShifts[0], 1, 1, modelShifts[1], 1, 1, 2898, 1, 1, 2925, 1 ]
+        boundaries2 = [ 9e3, modelShifts[0] + 7, 9e3, 9e3, modelShifts[1] + 8, 9e3, 9e3, 2912, 1.5e1, 9e3, 2939, 9e3 ]
+        boundaries = (boundaries1, boundaries2)
+        pInit = [1, modelShifts[0], 1, 1, modelShifts[1], 5, 1, 2905, 1, 1, 2932, 1]
+        #popt, pcov = curve_fit(fan.cryst1GaussModel, X, Y, p0 = [1, modelShifts[0], 1, 1, modelShifts[1], 5, 1, 2905, 1, 1, 2932, 1], bounds = boundaries)
+        popt, pcov = curve_fit(fan.cryst1GaussModel, X, Y, p0 = pInit, bounds = boundaries)
+        Y_model = fan.cryst1GaussModel(X, popt[0], popt[1], popt[2], popt[3], popt[4], popt[5], popt[6], popt[7], popt[8], popt[9], popt[10], popt[11])
 
-        print(popt1)
-        print(modelShifts)
+        print(popt)
+        #print(modelShifts)
         plt.plot(X, Y)
         plt.plot(X, Y_model)
-        
+        Y_Model1 = fan.GaussModel(X, popt[0], popt[1], popt[2])
+        Y_Model2 = fan.GaussModel(X, popt[3], popt[4], popt[5])
+        Y_Model3 = fan.GaussModel(X, popt[6], popt[7], popt[8])
+        Y_Model4 = fan.GaussModel(X, popt[9], popt[10], popt[11])
+        #plt.plot(X, Y_Model1)
+        #plt.plot(X, Y_Model2)
+        #plt.plot(X, Y_Model3)
+        #plt.plot(X, Y_Model4)
+        plt.legend(["main", "asym", "sym", "2905", "2932"])
+        integralInten1 = fan.rectIntegRight(X, Y_Model1)
+        integralInten2 = fan.rectIntegRight(X, Y_Model2)
+        crystal = integralInten1 / integralInten2 
+        print(file)
+        print(crystal)
         plt.show()
         plt.close()
 

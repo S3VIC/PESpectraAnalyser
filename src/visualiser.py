@@ -2,6 +2,54 @@ import matplotlib.pyplot as plt
 import matplotlib as mlt
 import numpy as np
 import src.interface as inter
+from enum import Enum
+import params.parameters as par
+#### ENUM SECTION ####
+class Color(Enum):
+    RED = 0
+    YELLOW = 1
+    BLUE = 2
+    GREEN = 3
+
+
+class Markers(Enum):
+    CROSS = 0
+    SQUARE = 1
+    TRIANGLE = 2
+    DIAMOND = 3
+
+
+def getBgType(fileName):
+    bgType = fileName[fileName.index("_") + 1 : -4]
+    match bgType:
+        case "raw":
+            return Markers.CROSS
+        case "asLS":
+            return Markers.SQUARE
+        case "arLS":
+            return Markers.TRIANGLE
+        case "at":
+            return Markers.DIAMOND
+        case other:
+            assert False, "Error, bgType not recognised!"
+
+
+def getCrystType(fileName):
+    crystType = int(fileName[5])
+    match crystType:
+        case 1:
+            return Color.RED
+        case 2:
+            return Color.YELLOW
+        case 3:
+            return Color.BLUE
+        case 4:
+            return Color.GREEN 
+        case other:
+            assert False, "Error, index out of enum range!"
+
+
+###################################################################
 
 
 def plotRawCorrectedSpectra(fileName, shifts, x, z):
@@ -13,24 +61,6 @@ def plotRawCorrectedSpectra(fileName, shifts, x, z):
     plt.close()
 
 
-
-def getCrystalData(filePath):
-  mlt.use('SVG')
-  dataFile = np.loadtxt(filePath, delimiter = '\t')
-  cryst_1 = np.array(dataFile[:, 0], dtype = 'float')
-  cryst_2 = np.array(dataFile[:, 1], dtype = 'float')
-  cryst_3 = np.array(dataFile[:, 2], dtype = 'float')
-  cryst_4 = np.array(dataFile[:, 3], dtype = 'float')
-
-  fig, ax = plt.subplots(1, 1)
-  bin_num = 100
-  n, bins, patches = ax.hist(cryst_1, bin_num, density = False, histtype = 'stepfilled', cumulative = False)
-
-  plt.savefig('cryst_1_raw_n2.svg')
-  plt.close()
-
-
-      
 def plotBarChart(title, xTicks, counts):
     fig, ax = plt.subplots()
     fig.suptitle(title)
@@ -38,7 +68,6 @@ def plotBarChart(title, xTicks, counts):
     plt.bar(xTicks, counts)
     plt.savefig(title + ".png")
     plt.close()
-
 
 
 def plotPartialSpectra(initialSpectra, spectra, path, fileName):
@@ -64,10 +93,6 @@ def plotPartialSpectra(initialSpectra, spectra, path, fileName):
     plt.close()
 
 
-def plotCrystScatter(path1, path2, path3, path4):
-    print("Nothing")
-
-
 
 def plotCrysts(path):
     mlt.rcParams.update({'figure.autolayout': True})
@@ -77,7 +102,7 @@ def plotCrysts(path):
     fig, ax = plt.subplots()
     ax.set_ylabel("Value")
     ax.set_xlabel("Probe ID")
-    plt.ylim([0, 2.2])
+    #plt.ylim([0, 2.2])
 
     for fileName in fileList:
         marker = getBgType(fileName)
@@ -88,5 +113,5 @@ def plotCrysts(path):
         file.close()
 
     plt.xticks(rotation=45)
-    plt.savefig("test2.png", dpi = 400)
+    plt.savefig("fileName.png", dpi = 600)
     plt.close()
