@@ -44,6 +44,8 @@ def initialActionChoice():
 
         case 7:
             stat.findRSshifts()
+        case 8:
+            cr.deconvolutionCryst2_3(2, ['CH2_ben_amorf', 'CH2_ben_cryst', 'CH2_twist_amorf'])
 
         case other:
             assert False, "nope"

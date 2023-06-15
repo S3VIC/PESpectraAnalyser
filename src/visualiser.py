@@ -100,9 +100,12 @@ def plotCrysts(path):
     fileList = inter.getFilenameList(path)
     ids = inter.createIDs()
     fig, ax = plt.subplots()
-    ax.set_ylabel("Value")
-    ax.set_xlabel("Probe ID")
-    #plt.ylim([0, 2.2])
+    #ax.set_ylabel("Value")
+    ax.set_ylabel("Wartość")
+    #ax.set_xlabel("Probe ID")
+    ax.set_xlabel("Nazwa próbki")
+
+    plt.ylim([0, 3])
 
     for fileName in fileList:
         marker = getBgType(fileName)

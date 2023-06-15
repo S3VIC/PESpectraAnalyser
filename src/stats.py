@@ -36,7 +36,7 @@ def findRSshifts():
                     peakShift = peak
             filteredPeaksShifts = np.append(filteredPeaksShifts, peakShift - peakRefShift)
         saveRSData(filteredPeaksShifts)
-        print(fileName)
-        print(filteredPeaksShifts)
+#        print(fileName)
+#        print(filteredPeaksShifts)
 
 
