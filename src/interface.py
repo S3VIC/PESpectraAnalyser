@@ -40,12 +40,12 @@ def initialActionChoice():
             #cr.integratePeaks(path, 10, 'CH2_ben_amorf', 'CH2_twist_amorf')
             cr.integratePeaks(path, 10, 'CH2_ben_amorf', 'CC_str_amorf')
         case 6:
-            cr.deconvolutionTest(2, ['CH2_str_sym', 'CH3_str_asym'])
+            cr.deconv1(2) 
 
         case 7:
             stat.findRSshifts()
         case 8:
-            cr.deconvolutionCryst2_3(2, ['CH2_ben_amorf', 'CH2_ben_cryst', 'CH2_twist_amorf'])
+            cr.deconv23(2)
 
         case other:
             assert False, "nope"
@@ -149,11 +149,17 @@ def getDataFromFile(filePath):
     return spectraData
 
 
-#saves data to file from an array
 def writeCrystToFile(filename, crystValue):
     file = open(filename, "a")
     file.write(str(crystValue) + "\n")
     file.close()
+
+def writeCrystsToFile(fileName, crystsArr):
+    file = open(fileName, 'a')
+    for cryst in crystsArr:
+        file.write(str(cryst) + '\n')
+    file.close()
+
 
 
 def createIDs():
@@ -164,3 +170,10 @@ def createIDs():
         ids = np.append(ids, file[:file.find('_')])
     print(ids)
     return ids
+
+
+def deconvChoice():
+    for prompt in par.deconvChoicePrompts:
+        print(prompt)
+    choice = input("Choose parameter to calculate: ")
+    return choice

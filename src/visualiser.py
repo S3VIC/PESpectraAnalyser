@@ -61,15 +61,6 @@ def plotRawCorrectedSpectra(fileName, shifts, x, z):
     plt.close()
 
 
-def plotBarChart(title, xTicks, counts):
-    fig, ax = plt.subplots()
-    fig.suptitle(title)
-    ax.set_ylabel("Liczba")
-    plt.bar(xTicks, counts)
-    plt.savefig(title + ".png")
-    plt.close()
-
-
 def plotPartialSpectra(initialSpectra, spectra, path, fileName):
     mlt.use("Cairo")
     fig, ax = plt.subplots()
@@ -105,7 +96,7 @@ def plotCrysts(path):
     #ax.set_xlabel("Probe ID")
     ax.set_xlabel("Nazwa próbki")
 
-    plt.ylim([0, 3])
+    plt.ylim([0, 2])
 
     for fileName in fileList:
         marker = getBgType(fileName)
