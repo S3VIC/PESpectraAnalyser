@@ -39,19 +39,21 @@ def cropSpectra(spectra, spectraLimits):
 
 
 def chooseSpectraLimits():
-    #OGRANICZENIE ZAKRESÓW DO TAKICH JAKIE BYŁY U LIN'A I GALL'A
-    print("1) 2700 - 3050")
-    print("2) 1380 - 1550")
-    print("3) 950 - 1200")
+    print("1) 2800 - 2990 -> CH2 stretch")
+    print("2) 1400 - 1500 -> CH2 bend")
+    print("3) 1280 - 1330 -> CH2 twist")
+    print("4) 1000 - 1100 -> CC stretch")
     
     spectraRangeChoice = int(input("Choose spectra range to correct: "))
     match spectraRangeChoice:
         case 1:
-            spectraLimits = np.array([2700, 3050], dtype='int')
+            spectraLimits = np.array([2800, 2990], dtype='int')
         case 2:
-            spectraLimits = np.array([1280, 1500], dtype='int')
+            spectraLimits = np.array([1400, 1500], dtype='int')
         case 3:
-            spectraLimits = np.array([950, 1200], dtype = 'int')
+            spectraLimits = np.array([1290, 1330], dtype = 'int')
+        case 4:
+            spectraLimits = np.array([1000, 1100], dtype = 'int')
         case other:
             assert False, "Wrong option"
 
@@ -146,17 +148,15 @@ def setParams(algorithmNum):
 
         match algorithmNum:
             case 1:
-                newSignal = asLS(croppedSpectra[1], 1e8, 0.10)
-                fileNamePrefix = "asLS_"
+                newSignal = asLS(croppedSpectra[1], 1e8, 0.01)
             case 2:
-                newSignal = arLS(croppedSpectra[1], 3e6, 0.05)
-                fileNamePrefix = "arLS_"
+                newSignal = arLS(croppedSpectra[1], 1e8, 0.001)
             case other:
                 assert False, "Wrong option"
     
         newSpectra = np.array([croppedSpectra[0], newSignal], dtype = 'float')
-        saveSpectraToCSV(newSpectra, outputPath, fileNamePrefix + file)
-        vis.plotPartialSpectra(spectra, newSpectra, outputPath, fileNamePrefix + file[:-4])
+        saveSpectraToCSV(newSpectra, outputPath, file)
+        vis.plotPartialSpectra(spectra, newSpectra, outputPath,  file[:-4])
         logStatus(filesNum, counter, file)
         counter = counter + 1
 

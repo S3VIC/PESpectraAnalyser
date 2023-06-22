@@ -168,13 +168,98 @@ def deconv1(promin):
         plt.close()
     crystFile.close()
 
-def deconv(path, fileList, outputPath, limits,  signals, paramNum):
-    
+
+def deconv2(promin):
+    #path = input("Path for CSV files: ")    
+    path = "output/dyneema/asLS/bend/"
+    outputPath = input("Path for output files: ")
+    fileList = inter.getFilenameList(path)
+    crystFile = open(outputPath + "cryst2.csv", 'a')
     for file in fileList:
         x, y = getSpectraDataFromFile(path + file, ',')
-        X, Y = limitSpectra(limits, x, y)
-        print("Not implemented yet")
+        X, Y = limitSpectra([1400, 1500], x, y)
+        popt, _ = curve_fit(fan.cryst2GaussModel, X, Y, p0 = mpar.c2_pInit, bounds = mpar.c2_bounds)
+        print(popt)
+        Y_Model = fan.cryst2GaussModel(X, popt[0], popt[1], popt[2], popt[3], popt[4], popt[5], popt[6], popt[7], popt[8], popt[9], popt[10], popt[11])
+        fig, ax = plt.subplots()
+        plt.plot(X,Y)
+        plt.plot(X, Y_Model)
+        plt.gca().invert_xaxis()
+        plt.legend(("widmo", "dopasowanie"))
+        YModel1 = fan.GaussModel(X, popt[0], popt[1], popt[2])
+        YModel2 = fan.GaussModel(X, popt[3], popt[4], popt[5])
+        integralInten1 = fan.rectIntegRight(X, YModel1)
+        integralInten2 = fan.rectIntegRight(X, YModel2)
+        crystal = integralInten1 / integralInten2 
+        crystFile.write(str(crystal) + '\n')
+        plt.savefig(outputPath + file[:-4] + ".png", dpi = 600)
+        plt.close()
+    crystFile.close() 
 
+
+def deconv3(promin):
+    #path = input("Path for CSV files: ")    
+    path1 = "output/dyneema/asLS/bend/"
+    path2 = "output/dyneema/asLS/twist/"
+    outputPath = input("Path for output files: ")
+    fileList1 = inter.getFilenameList(path1)
+    fileList2 = inter.getFilenameList(path2)
+    crystFile = open(outputPath + "cryst3.csv", 'a')
+    for index, file in enumerate(fileList1):
+        x1, y1, = getSpectraDataFromFile(path1 + fileList1[index], ',')
+        x2, y2 = getSpectraDataFromFile(path2 + fileList2[index], ',')
+
+        X1, Y1 = limitSpectra([1400, 1500], x1, y1)
+        X2, Y2 = limitSpectra([1280, 1330], x2, y2)
+        popt1, _ = curve_fit(fan.cryst2GaussModel, X1, Y1, p0 = mpar.c2_pInit, bounds = mpar.c2_bounds)
+        popt2, _ = curve_fit(fan.cryst3GaussModel, X2, Y2, p0 = mpar.c3_pInit, bounds = mpar.c3_bounds)
+        Y1_Model = fan.cryst2GaussModel(X1, popt1[0], popt1[1], popt1[2], popt1[3], popt1[4], popt1[5], popt1[6], popt1[7], popt1[8], popt1[9], popt1[10], popt1[11])
+        Y2_Model = fan.cryst3GaussModel(X2, popt2[0], popt2[1], popt2[2], popt2[3], popt2[4], popt2[5])
+        YModel1 = fan.GaussModel(X1, popt1[0], popt1[1], popt1[2])
+        YModel2 = fan.GaussModel(X2, popt2[0], popt2[1], popt2[2])
+        fig, ax = plt.subplots()
+        plt.plot(X2,Y2)
+        plt.plot(X2, Y2_Model)
+        plt.gca().invert_xaxis()
+        plt.legend(("widmo", "dopasowanie"))
+        plt.savefig(outputPath + file[:-4] + ".png", dpi = 600)
+        integralInten1 = fan.rectIntegRight(X1, YModel1)
+        integralInten2 = fan.rectIntegRight(X2, YModel2)
+        crystal = integralInten1 / integralInten2
+        crystFile.write(str(crystal) + '\n')
+    crystFile.close()
+
+
+def deconv4():
+    path1 = "output/dyneema/asLS/bend/"
+    path2 = "output/dyneema/asLS/str_CC/"
+    outputPath = input("Path for output files: ")
+    fileList1 = inter.getFilenameList(path1)
+    fileList2 = inter.getFilenameList(path2)
+    crystFile = open(outputPath + "cryst4.csv", 'a')
+    for index, file in enumerate(fileList1):
+        x1, y1, = getSpectraDataFromFile(path1 + fileList1[index], ',')
+        x2, y2 = getSpectraDataFromFile(path2 + fileList2[index], ',')
+
+        X1, Y1 = limitSpectra([1400, 1500], x1, y1)
+        X2, Y2 = limitSpectra([1000, 1100], x2, y2)
+        popt1, _ = curve_fit(fan.cryst2GaussModel, X1, Y1, p0 = mpar.c2_pInit, bounds = mpar.c2_bounds)
+        popt2, _ = curve_fit(fan.cryst3GaussModel, X2, Y2, p0 = mpar.c4_pInit, bounds = mpar.c4_bounds)
+        Y1_Model = fan.cryst2GaussModel(X1, popt1[0], popt1[1], popt1[2], popt1[3], popt1[4], popt1[5], popt1[6], popt1[7], popt1[8], popt1[9], popt1[10], popt1[11])
+        Y2_Model = fan.cryst3GaussModel(X2, popt2[0], popt2[1], popt2[2], popt2[3], popt2[4], popt2[5])
+        YModel1 = fan.GaussModel(X1, popt1[0], popt1[1], popt1[2])
+        YModel2 = fan.GaussModel(X2, popt2[0], popt2[1], popt2[2])
+        fig, ax = plt.subplots()
+        plt.plot(X2,Y2)
+        plt.plot(X2, Y2_Model)
+        plt.gca().invert_xaxis()
+        plt.legend(("widmo", "dopasowanie"))
+        plt.savefig(outputPath + file[:-4] + ".png", dpi = 600)
+        integralInten1 = fan.rectIntegRight(X1, YModel1)
+        integralInten2 = fan.rectIntegRight(X2, YModel2)
+        crystal = integralInten1 / integralInten2
+        crystFile.write(str(crystal) + '\n')
+    crystFile.close()
 
 def setUpDeconv():
     choice = inter.deconvChoice()
@@ -191,85 +276,4 @@ def setUpDeconv():
             print("Hello")
         case 6:
             print("Hello")
-
-    
-
-def deconv23(promin):
-    path = input("Path for CSV files: ")
-    fileList = inter.getFilenameList(path)
-    crysts2 = np.array([], dtype = 'float')
-    crysts3 = np.array([], dtype = 'float')
-    for file in fileList:
-        x, y = getSpectraDataFromFile(path + file, ',')
-        X, Y = limitSpectra([1280, 1500], x, y)
-        popt, _ = curve_fit(fan.cryst2GaussModel, X, Y, p0 = mpar.c23_pInit, bounds = mpar.c23_bounds)
-        Y_model = fan.cryst2GaussModel(X, popt[0], popt[1], popt[2], popt[3], popt[4], popt[5], popt[6], popt[7], popt[8], popt[9], popt[10], popt[11], popt[12], popt[13], popt[14], popt[15], popt[16], popt[17], popt[18], popt[19], popt[20])
-        fig, ax = plt.subplots()
-        plt.plot(X,Y)
-        plt.plot(X, Y_model)
-        plt.gca().invert_xaxis()
-        plt.legend(("widmo", "dopoasowanie"))
-        #plt.show()
-        plt.savefig(file[:-4] + ".png", dpi = 600)
-        plt.close()
-        Y_model1 = fan.GaussModel(X, popt[0], popt[1], popt[2])
-        Y_model2 = fan.GaussModel(X, popt[3], popt[4], popt[5])
-        Y_model3 = fan.GaussModel(X, popt[6], popt[7], popt[8])
-        integralInten1 = fan.rectIntegRight(X, Y_model1)
-        integralInten2 = fan.rectIntegRight(X, Y_model2)
-        integralInten3 = fan.rectIntegRight(X, Y_model3)
-        crysts2 = np.append(crysts2, integralInten2 / integralInten1)
-        crysts3 = np.append(crysts3, integralInten2 / integralInten3)
-
-    inter.writeCrystsToFile("cryst2.csv", crysts2)
-    inter.writeCrystsToFile("cryst3.csv", crysts3)
-
-
-
-def deconvolutionTest(promin, signals):
-    path = input("Path for CSV files: ")
-    fileList = inter.getFilenameList(path)
-    crystFile = open("asLS.csv", 'a')
-    for file in fileList:
-        x, y = getSpectraDataFromFile(path + file, ',')
-        X, Y = limitSpectra([2750, 3000], x, y)
-        
-        modelShifts = findModelPeakShifts(X, Y, promin, signals)
-        boundaries1 = [ 1, modelShifts[0], 1, 1, modelShifts[1], 1, 1, 2898, 1, 1, 2925, 1 ]
-        boundaries2 = [ 9e3, modelShifts[0] + 7, 9e3, 9e3, modelShifts[1] + 8, 9e3, 9e3, 2912, 1.0e1, 9e3, 2939, 1.5e1 ]
-        boundaries = (boundaries1, boundaries2)
-        pInit = [1, modelShifts[0], 1, 1, modelShifts[1], 5, 1, 2905, 1, 1, 2932, 1]
-        #popt, pcov = curve_fit(fan.cryst1GaussModel, X, Y, p0 = [1, modelShifts[0], 1, 1, modelShifts[1], 5, 1, 2905, 1, 1, 2932, 1], bounds = boundaries)
-        popt, pcov = curve_fit(fan.cryst1GaussModel, X, Y, p0 = pInit, bounds = boundaries)
-        Y_model = fan.cryst1GaussModel(X, popt[0], popt[1], popt[2], popt[3], popt[4], popt[5], popt[6], popt[7], popt[8], popt[9], popt[10], popt[11])
-        print(popt)
-        #print(modelShifts)
-        fig, ax = plt.subplots()
-        ax.set_ylabel("Intensywność [j. u.]")
-        ax.set(yticklabels = [])
-        ax.set_xlabel("Przesunięcie Ramana [cm$^{-1}]$")
-        plt.gca().invert_xaxis()
-        plt.plot(X, Y)
-        plt.plot(X, Y_model)
-
-        Y_Model1 = fan.GaussModel(X, popt[0], popt[1], popt[2])
-        Y_Model2 = fan.GaussModel(X, popt[3], popt[4], popt[5])
-       # Y_Model3 = fan.GaussModel(X, popt[6], popt[7], popt[8])
-       # Y_Model4 = fan.GaussModel(X, popt[9], popt[10], popt[11])
-        #plt.plot(X, Y_Model1)
-        #plt.plot(X, Y_Model2)
-        #plt.plot(X, Y_Model3)
-        #plt.plot(X, Y_Model4)
-        plt.legend(["widmo", "dopasowanie"])
-        #plt.legend(["widmo", "CH2_str_asym", "CH2_str_sym", "CH2_str_sym", "CH2_str_asym"])
-        integralInten1 = fan.rectIntegRight(X, Y_Model1)
-        integralInten2 = fan.rectIntegRight(X, Y_Model2)
-        crystal = integralInten1 / integralInten2 
-        print(file)
-        crystFile.write(str(crystal) + '\n')
-        #print(crystal)
-        #plt.show()
-        plt.savefig(file[:-4] + "_image.png", dpi=600)
-        plt.close()
-    crystFile.close()
 

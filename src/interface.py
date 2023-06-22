@@ -45,7 +45,11 @@ def initialActionChoice():
         case 7:
             stat.findRSshifts()
         case 8:
-            cr.deconv23(2)
+            cr.deconv2(2)
+        case 9:
+            cr.deconv3(2)
+        case 10:
+            cr.deconv4()
 
         case other:
             assert False, "nope"
@@ -63,6 +67,10 @@ def plottingActions():
             vis.plotCrysts(path)
         case 4:
             mainMenu()
+        case 5:
+            pathRaw = input("Path for raw files: ")
+            pathOmnic = input("Path for omnic files: ")
+            vis.plotOmnicPartialSpectra(pathRaw, pathOmnic)
 
 
 def crystCalculationActions():
