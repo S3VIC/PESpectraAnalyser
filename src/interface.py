@@ -40,16 +40,20 @@ def initialActionChoice():
             #cr.integratePeaks(path, 10, 'CH2_ben_amorf', 'CH2_twist_amorf')
             cr.integratePeaks(path, 10, 'CH2_ben_amorf', 'CC_str_amorf')
         case 6:
-            cr.deconv1(2) 
+            model = input("Model type (Gauss/Lorentz): ")
+            cr.deconv1(model) 
 
         case 7:
             stat.findRSshifts()
         case 8:
-            cr.deconv2(2)
+            model = input("Model type (Gauss/Lorentz): ")
+            cr.deconv2(model)
         case 9:
-            cr.deconv3(2)
+            model = input("Model type (Gauss/Lorentz): ")
+            cr.deconv3(model)
         case 10:
-            cr.deconv4()
+            model = input("Model type (Gauss/Lorentz): ")
+            cr.deconv4(model)
 
         case other:
             assert False, "nope"

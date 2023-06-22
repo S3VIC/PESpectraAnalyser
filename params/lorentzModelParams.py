@@ -11,15 +11,15 @@ SIGNAL_SHIFTS = {
 }
 
 #Params for cryst 1
-c1_min_p1 = np.array([1, SIGNAL_SHIFTS['CH2_str_sym'] - 4, 1], dtype = 'float')
-c1_min_p2 = np.array([1, SIGNAL_SHIFTS['CH2_str_asym'] - 4, 1], dtype = 'float')
-c1_min_p3 = np.array([1, 2898, 1], dtype = 'float')
-c1_min_p4 = np.array([1, 2925, 1], dtype = 'float')
+c1_min_p1 = np.array([1, SIGNAL_SHIFTS['CH2_str_sym'] - 4, 0.5], dtype = 'float')
+c1_min_p2 = np.array([1, SIGNAL_SHIFTS['CH2_str_asym'] - 4, 0.5], dtype = 'float')
+c1_min_p3 = np.array([1, 2898, 0.5], dtype = 'float')
+c1_min_p4 = np.array([1, 2925, 0.5], dtype = 'float')
 
-c1_max_p1 = np.array([4.5e3, SIGNAL_SHIFTS['CH2_str_sym'] + 6, 25], dtype = 'float')
-c1_max_p2 = np.array([4.5e3, SIGNAL_SHIFTS['CH2_str_asym'] + 6, 25], dtype = 'float')
-c1_max_p3 = np.array([1.5e3, 2912, 30], dtype = 'float')
-c1_max_p4 = np.array([1.5e3, 2939, 30], dtype = 'float')
+c1_max_p1 = np.array([np.inf, SIGNAL_SHIFTS['CH2_str_sym'] + 6, np.inf], dtype = 'float')
+c1_max_p2 = np.array([np.inf, SIGNAL_SHIFTS['CH2_str_asym'] + 6, np.inf], dtype = 'float')
+c1_max_p3 = np.array([np.inf, 2912, np.inf], dtype = 'float')
+c1_max_p4 = np.array([np.inf, 2939, np.inf], dtype = 'float')
 
 
 c1_bounds_low = np.concatenate((c1_min_p1, c1_min_p2, c1_min_p3, c1_min_p4), axis = None)
@@ -36,15 +36,15 @@ c1_pInit = np.concatenate((c1_init_p1, c1_init_p2, c1_init_p3, c1_init_p4), axis
 ###############################################################################
 
 #Params for cryst 2
-c2_min_p1 = np.array([1, SIGNAL_SHIFTS['CH2_ben_cryst'] - 7, 1], dtype = 'float')
-c2_min_p2 = np.array([1, SIGNAL_SHIFTS['CH2_ben_amorf'] - 12, 1], dtype = 'float')
+c2_min_p1 = np.array([0, SIGNAL_SHIFTS['CH2_ben_cryst'] - 7, 0.1], dtype = 'float')
+c2_min_p2 = np.array([0, SIGNAL_SHIFTS['CH2_ben_amorf'] - 12, 0.1], dtype = 'float')
 c2_min_p3 = np.array([0, 1459, 1], dtype = 'float')
-c2_min_p4 = np.array([1, 1470, 1], dtype = 'float')
+c2_min_p4 = np.array([0, 1470, 1], dtype = 'float')
 
-c2_max_p1 = np.array([4.5e3, SIGNAL_SHIFTS['CH2_ben_cryst'] + 12, 15], dtype = 'float')
-c2_max_p2 = np.array([4.5e3, SIGNAL_SHIFTS['CH2_ben_amorf'] + 12, 4], dtype = 'float')
-c2_max_p3 = np.array([4.5e3, 1464, 20], dtype = 'float')
-c2_max_p4 = np.array([4.5e3, 1480, 20], dtype = 'float')
+c2_max_p1 = np.array([np.inf, SIGNAL_SHIFTS['CH2_ben_cryst'] + 12, np.inf], dtype = 'float')
+c2_max_p2 = np.array([np.inf, SIGNAL_SHIFTS['CH2_ben_amorf'] + 12, np.inf], dtype = 'float')
+c2_max_p3 = np.array([np.inf, 1464, np.inf], dtype = 'float')
+c2_max_p4 = np.array([np.inf, 1480, np.inf], dtype = 'float')
 
 
 c2_bounds_low = np.concatenate((c2_min_p1, c2_min_p2, c2_min_p3, c2_min_p4), axis = None)

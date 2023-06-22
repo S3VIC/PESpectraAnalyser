@@ -150,7 +150,7 @@ def setParams(algorithmNum):
             case 1:
                 newSignal = asLS(croppedSpectra[1], 1e8, 0.01)
             case 2:
-                newSignal = arLS(croppedSpectra[1], 1e8, 0.001)
+                newSignal = arLS(croppedSpectra[1], 3e8, 0.001)
             case other:
                 assert False, "Wrong option"
     
