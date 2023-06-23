@@ -131,3 +131,19 @@ def plotCrysts(path):
     plt.xticks(rotation=45)
     plt.savefig("fileName.png", dpi = 600)
     plt.close()
+
+
+def plotDeconvFit(X, Y, YFit, path, fileName, save):
+    fig, ax = plt.subplots()
+    ax.set(yticklabels = [])
+    ax.set_ylabel("Intensywność [j. u.]")
+    ax.set_xlabel("Przesunięcie Ramana [cm$^{-1}]$")
+    plt.gca().invert_xaxis()
+    plt.plot(X, Y)
+    plt.plot(X, YFit)
+    plt.legend(["widmo", "dopasowanie"])
+    if(save):
+        plt.savefig(path + fileName[:-4], dpi=300)
+    else:
+        plt.show()
+    plt.close()
