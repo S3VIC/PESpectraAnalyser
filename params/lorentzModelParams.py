@@ -36,15 +36,15 @@ c1_pInit = np.concatenate((c1_init_p1, c1_init_p2, c1_init_p3, c1_init_p4), axis
 ###############################################################################
 
 #Params for cryst 2
-c2_min_p1 = np.array([0, SIGNAL_SHIFTS['CH2_ben_cryst'] - 7, 0.1], dtype = 'float')
-c2_min_p2 = np.array([0, SIGNAL_SHIFTS['CH2_ben_amorf'] - 12, 0.1], dtype = 'float')
-c2_min_p3 = np.array([0, 1459, 1], dtype = 'float')
-c2_min_p4 = np.array([0, 1470, 1], dtype = 'float')
+c2_min_p1 = np.array([1, SIGNAL_SHIFTS['CH2_ben_cryst'] - 7, 0.1], dtype = 'float')
+c2_min_p2 = np.array([1, SIGNAL_SHIFTS['CH2_ben_amorf'] - 12, 0.1], dtype = 'float')
+c2_min_p3 = np.array([1, 1459, 1], dtype = 'float')
+c2_min_p4 = np.array([1, 1470, 1], dtype = 'float')
 
-c2_max_p1 = np.array([np.inf, SIGNAL_SHIFTS['CH2_ben_cryst'] + 12, np.inf], dtype = 'float')
-c2_max_p2 = np.array([np.inf, SIGNAL_SHIFTS['CH2_ben_amorf'] + 12, np.inf], dtype = 'float')
-c2_max_p3 = np.array([np.inf, 1464, np.inf], dtype = 'float')
-c2_max_p4 = np.array([np.inf, 1480, np.inf], dtype = 'float')
+c2_max_p1 = np.array([5e3, SIGNAL_SHIFTS['CH2_ben_cryst'] + 12, np.inf], dtype = 'float')
+c2_max_p2 = np.array([5e3, SIGNAL_SHIFTS['CH2_ben_amorf'] + 12, np.inf], dtype = 'float')
+c2_max_p3 = np.array([5e3, 1464, np.inf], dtype = 'float')
+c2_max_p4 = np.array([5e3, 1480, np.inf], dtype = 'float')
 
 
 c2_bounds_low = np.concatenate((c2_min_p1, c2_min_p2, c2_min_p3, c2_min_p4), axis = None)
@@ -62,19 +62,19 @@ c2_pInit = np.concatenate((c2_init_p1, c2_init_p2, c2_init_p3, c2_init_p4), axis
 
 
 #Params for cryst 3 (uses also params for cryst 2)
-c3_min_p1 = np.array([1, SIGNAL_SHIFTS['CH2_twist_amorf'] - 4, 1], dtype = 'float')
-c3_min_p2 = np.array([1, 1310, 1], dtype = 'float')
+c3_min_p1 = np.array([0.01, SIGNAL_SHIFTS['CH2_twist_amorf'] - 15, 1], dtype = 'float')
+c3_min_p2 = np.array([0.01, 1310, 1], dtype = 'float')
 
-c3_max_p1 = np.array([4.5e3, SIGNAL_SHIFTS['CH2_twist_amorf'] + 4, 15], dtype = 'float')
-c3_max_p2 = np.array([4.5e3, 1319, 4], dtype = 'float')
+c3_max_p1 = np.array([2e5, SIGNAL_SHIFTS['CH2_twist_amorf'] + 1, np.inf], dtype = 'float')
+c3_max_p2 = np.array([2e5, 1319, np.inf], dtype = 'float')
 
 
 c3_bounds_low = np.concatenate((c3_min_p1, c3_min_p2), axis = None)
 c3_bounds_high = np.concatenate((c3_max_p1, c3_max_p2), axis = None)
 
 #init values
-c3_init_p1 = np.array([1, SIGNAL_SHIFTS['CH2_twist_amorf'], 1], dtype = 'float')
-c3_init_p2 = np.array([1, 1315, 1], dtype = 'float')
+c3_init_p1 = np.array([1, SIGNAL_SHIFTS['CH2_twist_amorf'], 3], dtype = 'float')
+c3_init_p2 = np.array([1, 1315, 3], dtype = 'float')
 
 c3_bounds = (c3_bounds_low, c3_bounds_high)
 c3_pInit = np.concatenate((c3_init_p1, c3_init_p2), axis = None)

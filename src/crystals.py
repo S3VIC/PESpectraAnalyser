@@ -102,7 +102,7 @@ def findModelPeakShifts(X, Y, promin, signals):
 #crystr5 = 1416/(const * 1295 + 1303) do implementacji zwłaszcza do metod normalizacyjnych!!
 def setModelParams(model, cryst):
     match(model):
-        case 'Gauss':
+        case 'g':
             match cryst:
                 case 1:
                     return fan.cryst1GaussModel, fan.GaussModel, mpar.c1_pInit, mpar.c1_bounds
@@ -113,23 +113,41 @@ def setModelParams(model, cryst):
                 case 4:
                     return fan.cryst2GaussModel, fan.GaussModel, mpar.c2_pInit, mpar.c2_bounds, fan.cryst3GaussModel, mpar.c4_pInit, mpar.c4_bounds
 
-        case 'Lorentz':
+        case 'l':
             match cryst:
                 case 1:
-                    return fan.cryst1LorentzModel, fan.LorentzModel, mpar.c1_pInit, mpar.c1_bounds
+                    return fan.cryst1LorentzModel, fan.LorentzModel, lor.c1_pInit, lor.c1_bounds
                 case 2:
-                    return fan.cryst2LorentzModel, fan.LorentzModel, mpar.c2_pInit, mpar.c2_bounds
+                    return fan.cryst2LorentzModel, fan.LorentzModel, lor.c2_pInit, lor.c2_bounds
                 case 3:
-                    return fan.cryst2LorentzModel, fan.LorentzModel, mpar.c2_pInit, mpar.c2_bounds, fan.cryst3LorentzModel, mpar.c3_pInit, mpar.c3_bounds
+                    return fan.cryst2LorentzModel, fan.LorentzModel, lor.c2_pInit, lor.c2_bounds, fan.cryst3LorentzModel, lor.c3_pInit, lor.c3_bounds
                 case 4:
-                    return fan.cryst2LorentzModel, fan.LorentzModel, mpar.c2_pInit, mpar.c2_bounds, fan.cryst3LorentzModel, mpar.c4_pInit, mpar.c4_bounds
+                    return fan.cryst2LorentzModel, fan.LorentzModel, lor.c2_pInit, lor.c2_bounds, fan.cryst3LorentzModel, lor.c4_pInit, lor.c4_bounds
+
+
+def setInitialParams(paramFileName, paramNum):
+    if(paramNum > 2):
+        path = np.array([], dtype = 'str')
+        fileList = np.array([], dtype = 'str')
+        for index in range(2):
+            p = input("Path {0} for CSV files: ".format(index + 1))
+            path = np.append(path, p)
+            fileList = np.append(fileList, inter.getFilenameList(p), axis = 0)
+        fileList = np.reshape(fileList, (2, int(len(fileList)/2)))
+        #print(fileList)
+    
+    else:
+        path = input("Path for CSV files: ")
+        fileList = inter.getFilenameList(path)
+    
+    outputPath = input("Path for output files: ")
+    paramFile = open(outputPath + paramFileName, 'a')
+    
+    return path, outputPath, fileList, paramFile
 
 
 def deconv1(model):
-    path = input("Path for CSV files: ")
-    outputPath = input("Path for output files: ")
-    fileList = inter.getFilenameList(path)
-    crystFile = open(outputPath + "cryst1.csv", 'a')
+    path, outputPath, fileList, crystFile = setInitialParams("cryst1.csv", 1)
     func, modelFunc, inits, boundaries = setModelParams(model, 1)
     for file in fileList:
         x, y = getSpectraDataFromFile(path + file, ',')
@@ -148,16 +166,12 @@ def deconv1(model):
 
 
 def deconv2(model):
-    path = input("Path for CSV files: ")    
-    outputPath = input("Path for output files: ")
-    fileList = inter.getFilenameList(path)
-    crystFile = open(outputPath + "cryst2.csv", 'a')
+    path, outputPath, fileList, crystFile = setInitialParams("cryst2.csv")
     func, modelFunc, inits, boundaries = setModelParams(model, 2)
     for file in fileList:
         x, y = getSpectraDataFromFile(path + file, ',')
         X, Y = limitSpectra([1400, 1500], x, y)
         popt, _ = curve_fit(func, X, Y, p0 = inits, bounds = boundaries)
-        print(popt)
         Y_Model = func(X, popt[0], popt[1], popt[2], popt[3], popt[4], popt[5], popt[6], popt[7], popt[8], popt[9], popt[10], popt[11])
         vis.plotDeconvFit(X, Y, Y_model, outputPath, file, save = False)
         YModel1 = modelFunc(X, popt[0], popt[1], popt[2])
@@ -171,18 +185,11 @@ def deconv2(model):
 
 
 def deconv3(model):
-    #path = input("Path for CSV files: ")    
-    path1 = "output/dyneema/at/"
-    path2 = "output/dyneema/at/"
-    outputPath = input("Path for output files: ")
-    fileList1 = inter.getFilenameList(path1)
-    fileList2 = inter.getFilenameList(path2)
-    crystFile = open(outputPath + "cryst3.csv", 'a')
+    path, outputPath, fList, crystFile = setInitialParams("cryst3.csv", 3)
     func1, modelFunc, inits1, boundaries1, func2, inits2, boundaries2 = setModelParams(model, 3)
-    for index, file in enumerate(fileList1):
-        x1, y1, = getSpectraDataFromFile(path1 + fileList1[index], ',')
-        x2, y2 = getSpectraDataFromFile(path2 + fileList2[index], ',')
-
+    for index, file in enumerate(fList[0]):
+        x1, y1, = getSpectraDataFromFile(path[0] + fList[0][index], ',')
+        x2, y2 = getSpectraDataFromFile(path[1] + fList[1][index], ',')
         X1, Y1 = limitSpectra([1400, 1500], x1, y1)
         X2, Y2 = limitSpectra([1280, 1330], x2, y2)
         popt1, _ = curve_fit(func1, X1, Y1, p0 = inits1, bounds = boundaries1)
@@ -191,7 +198,7 @@ def deconv3(model):
         Y2_Model = func2(X2, popt2[0], popt2[1], popt2[2], popt2[3], popt2[4], popt2[5])
         YModel1 = modelFunc(X1, popt1[0], popt1[1], popt1[2])
         YModel2 = modelFunc(X2, popt2[0], popt2[1], popt2[2])
-        vis.plotDeconvFit(X2, Y2, Y2_model, outputPath, file, save = False)
+        vis.plotDeconvFit(X2, Y2, Y2_Model, outputPath, file, save = True)
         integralInten1 = fan.rectIntegRight(X1, YModel1)
         integralInten2 = fan.rectIntegRight(X2, YModel2)
         crystal = integralInten1 / integralInten2
@@ -200,17 +207,11 @@ def deconv3(model):
 
 
 def deconv4(model):
-    path1 = "output/dyneema/at/"
-    path2 = "output/dyneema/at/"
-    outputPath = input("Path for output files: ")
-    fileList1 = inter.getFilenameList(path1)
-    fileList2 = inter.getFilenameList(path2)
-    crystFile = open(outputPath + "cryst4.csv", 'a')
+    path, outputPath, fList, crystFile = setInitialParams("cryst4.csv", 4)
     func1, modelFunc, inits1, boundaries1, func2, inits2, boundaries2 = setModelParams(model, 4)
-    for index, file in enumerate(fileList1):
-        x1, y1, = getSpectraDataFromFile(path1 + fileList1[index], ',')
-        x2, y2 = getSpectraDataFromFile(path2 + fileList2[index], ',')
-
+    for index, file in enumerate(fList[0]):
+        x1, y1 = getSpectraDataFromFile(path[0] + fList[0][index], ',')
+        x2, y2 = getSpectraDataFromFile(path[1] + fList[1][index], ',')
         X1, Y1 = limitSpectra([1400, 1500], x1, y1)
         X2, Y2 = limitSpectra([1000, 1100], x2, y2)
         popt1, _ = curve_fit(func1, X1, Y1, p0 = mpar.c2_pInit, bounds = mpar.c2_bounds)
@@ -219,7 +220,7 @@ def deconv4(model):
         Y2_Model = func2(X2, popt2[0], popt2[1], popt2[2], popt2[3], popt2[4], popt2[5])
         YModel1 = modelFunc(X1, popt1[0], popt1[1], popt1[2])
         YModel2 = modelFunc(X2, popt2[0], popt2[1], popt2[2])
-        vis.plotDeconvFit(X2, Y2, Y2_model, outputPath, file, save = False)
+        vis.plotDeconvFit(X2, Y2, Y2_Model, outputPath, file, save = True)
         integralInten1 = fan.rectIntegRight(X1, YModel1)
         integralInten2 = fan.rectIntegRight(X2, YModel2)
         crystal = integralInten1 / integralInten2

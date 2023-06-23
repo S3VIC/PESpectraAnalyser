@@ -66,7 +66,7 @@ c3_min_p1 = np.array([1, SIGNAL_SHIFTS['CH2_twist_amorf'] - 4, 1], dtype = 'floa
 c3_min_p2 = np.array([1, 1310, 1], dtype = 'float')
 
 c3_max_p1 = np.array([4.5e3, SIGNAL_SHIFTS['CH2_twist_amorf'] + 4, 15], dtype = 'float')
-c3_max_p2 = np.array([4.5e3, 1319, 4], dtype = 'float')
+c3_max_p2 = np.array([4.5e3, 1319, 8], dtype = 'float')
 
 
 c3_bounds_low = np.concatenate((c3_min_p1, c3_min_p2), axis = None)
